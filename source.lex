@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "y.tab.h"
 int line = 1;
 %}
 
@@ -19,30 +20,24 @@ INTEGER_EXP {INTEGER}[Ee][+-]?{INTEGER}
 <COMMENT>"*/" {BEGIN INITIAL;}
 
 
-{ENDLINE} {line++; printf("\n");};
-main\(\) printf("tMAIN");
-\{ printf("tBO");
-\} printf("tBC");
-const printf("tCONST");
-int printf("tINT");
-printf printf("tPRINTF");
-{ID} printf("tID");
-\+ printf("tPLUS");
-\- printf("tMINUS");
-\* printf("tMULT");
-\/ printf("tDIV");
-= printf("tEQUAL");
-\( printf("tPO");
-\) printf("tPC");
-{SEPARATOR} printf("tSEP"); 
-; printf("tENDINSTR");
-{INTEGER} printf("tINTEGER");
-{INTEGER_EXP} printf("tINTEGER_EXP");
+{ENDLINE} {line++;};
+main return(tMAIN);
+\{ return(tBO);
+\} return(tBC);
+const return(tCONST);
+int return(tINT);
+printf return(tPRINTF);
+{ID} return(tID);
+\+ return(tPLUS);
+\- return(tMINUS);
+\* return(tMULT);
+\/ return(tDIV);
+= return(tEQUAL);
+\( return(tPO);
+\) return(tPC);
+{SEPARATOR} return(tSEP); 
+; return(tENDINSTR);
+{INTEGER} return(tINTEGER);
+{INTEGER_EXP} return(tINTEGER_EXP);
 
 %%
-
-int main() {
-	yylex();
-	printf("\n");
-	printf("line = %d\n", line);
-}
