@@ -7,9 +7,11 @@ extern int line;
 
 %start Main
 %%
-Main : tINT tMAIN tPO tPC tBO Declarations tBC{
+Main : tINT tMAIN tPO tPC tBO Declarations tBC
+		{
 			printf("Fonction main");
 		}
+
 Declarations : tINT Variables tENDINSTR Declarations
 		| 
 		{
