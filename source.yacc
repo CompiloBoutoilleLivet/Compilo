@@ -9,7 +9,7 @@ extern int line;
 %%
 Main : tINT tMAIN tPO tPC tBO Declarations tBC
 		{
-			printf("Fonction main");
+			printf("Fonction main\n");
 		}
 
 Declarations : tINT Variables tENDINSTR Declarations
@@ -17,6 +17,7 @@ Declarations : tINT Variables tENDINSTR Declarations
 		{
 			printf("Bloc déclarations\n");
 		}
+
 Variables : Variable
 		| Variable tSEP Variables
 		{

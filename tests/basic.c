@@ -4,13 +4,9 @@ int main()
 	/* 
 	Mon super commentaire
 	TEST
-
-
-	ok ok ok o k
-
-
-
-	o
 	*/
-	int c  ;
+	int a;
+	int b = 3;
+	int c, d = 1;
+	int e = 5, f, g, h, i = 7, j;
 }
