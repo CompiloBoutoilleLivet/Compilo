@@ -15,7 +15,7 @@ INTEGER [0-9]+([Ee][+-]?[0-9]+)?
 
 "/*" 				{BEGIN COMMENT;}
 <COMMENT>\n 		{line++;}
-<COMMENT>[^\*][^\/] {}
+<COMMENT>[^\*\/] 	{}
 <COMMENT>"*/" 		{BEGIN INITIAL;}
 
 

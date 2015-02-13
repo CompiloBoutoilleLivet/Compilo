@@ -44,6 +44,6 @@ yyerror (char *s) {
 int main() {
 	yyparse();
 	printf("\n");
-	printf("line = %d\n", line);
+	printf("Number of line(s) = %d\n", line);
 	return 0;
 }
