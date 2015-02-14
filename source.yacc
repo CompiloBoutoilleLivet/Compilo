@@ -27,7 +27,13 @@ yyerror (char *s) {
     fprintf (stderr, "%s\n", s);
 }
 
-int main() {
+int main(int argc, char **argv) {
+	
+	if(argc != 1) // debug
+	{
+		yydebug = 1;
+	}
+
 	yyparse();
 	printf("Number of line(s) = %d\n", line);
 	return 0;
