@@ -35,7 +35,7 @@ printf 		{return tPRINTF;};
 \( 			{return tPO;};
 \) 			{return tPC;};
 ,			{return tCOMA;};
-; 			{return tENDINSTR;};
+; 			{return tSEMICOLON;};
 {INTEGER} 	{return tINTEGER;};
 
 %%

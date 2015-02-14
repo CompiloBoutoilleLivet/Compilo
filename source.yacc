@@ -3,13 +3,13 @@
 extern int line;
 %}
 
-%token tINT tMAIN tBO tBC tPO tPC tCONST tPRINTF tID tPLUS tMINUS tMULT tDIV tEQUAL tCOMA tENDINSTR tINTEGER 
+%token tINT tMAIN tBO tBC tPO tPC tCONST tPRINTF tID tPLUS tMINUS tMULT tDIV tEQUAL tCOMA tSEMICOLON tINTEGER 
 
 %start Main
 %%
 Main : tINT tMAIN tPO tPC tBO Declarations tBC
 
-Declarations : tINT Variables tENDINSTR Declarations
+Declarations : tINT Variables tSEMICOLON Declarations
 		| 
 
 Variables : Variable
