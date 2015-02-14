@@ -6,7 +6,6 @@ int line = 1;
 
 WHITESPACE [ \t]
 ENDLINE [\n]+
-SEPARATOR (,)
 ID [a-zA-Z][a-zA-Z0-9_]*
 INTEGER [0-9]+([Ee][+-]?[0-9]+)?
 
@@ -35,7 +34,7 @@ printf 		{return tPRINTF;};
 = 			{return tEQUAL;};
 \( 			{return tPO;};
 \) 			{return tPC;};
-,			{return tSEP;};
+,			{return tCOMA;};
 ; 			{return tENDINSTR;};
 {INTEGER} 	{return tINTEGER;};
 

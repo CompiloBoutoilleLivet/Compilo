@@ -3,7 +3,7 @@
 extern int line;
 %}
 
-%token tINT tMAIN tBO tBC tPO tPC tCONST tPRINTF tID tPLUS tMINUS tMULT tDIV tEQUAL tSEP tENDINSTR tINTEGER 
+%token tINT tMAIN tBO tBC tPO tPC tCONST tPRINTF tID tPLUS tMINUS tMULT tDIV tEQUAL tCOMA tENDINSTR tINTEGER 
 
 %start Main
 %%
@@ -13,7 +13,7 @@ Declarations : tINT Variables tENDINSTR Declarations
 		| 
 
 Variables : Variable
-		| Variable tSEP Variables
+		| Variable tCOMA Variables
 
 Variable : tID
 		| Affectation 
