@@ -9,8 +9,8 @@ extern int line;
 %%
 Main : tINT tMAIN tPO tPC tBO Declarations tBC
 
-Declarations : tINT Variables tSEMICOLON Declarations
-		| 
+Declarations : /* empty */
+			| Declarations tINT Variables tSEMICOLON
 
 Variables : Variable
 		| Variable tCOMA Variables
