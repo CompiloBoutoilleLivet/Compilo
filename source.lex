@@ -4,7 +4,7 @@
 int line = 1;
 %}
 
-
+WHITESPACE [ \t]
 ENDLINE [\n]+
 SEPARATOR (,)
 ID [a-zA-Z][a-zA-Z0-9_]*
@@ -19,23 +19,24 @@ INTEGER [0-9]+([Ee][+-]?[0-9]+)?
 <COMMENT>"*/" 		{BEGIN INITIAL;}
 
 
-{ENDLINE} 	{printf("\n");line++;};
-main 		{printf("tMAIN"); return(tMAIN);};
-\{ 			{printf("tBO"); return(tBO);};
-\} 			{printf("tBC"); return(tBC);};
-const 		{printf("tCONST"); return(tCONST);};
-int 		{printf("tINT"); return(tINT);};
-printf 		{printf("tPRINTF"); return(tPRINTF);};
-{ID} 		{printf("tID"); return(tID);};
-\+ 			{printf("tPLUS"); return(tPLUS);};
-\- 			{printf("tMINUS"); return(tMINUS);};
-\* 			{printf("tMULT"); return(tMULT);};
-\/ 			{printf("tDIV"); return(tDIV);};
-= 			{printf("tEQUAL"); return(tEQUAL);};
-\( 			{printf("tPO"); return(tPO);};
-\) 			{printf("tPC"); return(tPC);};
-{SEPARATOR} {printf("tSEP"); return(tSEP);};
-; 			{printf("tENDINSTR"); return(tENDINSTR);};
-{INTEGER} 	{printf("tINTEGER"); return(tINTEGER);};
+{WHITESPACE} {};
+{ENDLINE} 	{line++;};
+main 		{return tMAIN;};
+\{ 			{return tBO;};
+\} 			{return tBC;};
+const 		{return tCONST;};
+int 		{return tINT;};
+printf 		{return tPRINTF;};
+{ID} 		{return tID;};
+\+ 			{return tPLUS;};
+\- 			{return tMINUS;};
+\* 			{return tMULT;};
+\/ 			{return tDIV;};
+= 			{return tEQUAL;};
+\( 			{return tPO;};
+\) 			{return tPC;};
+,			{return tSEP;};
+; 			{return tENDINSTR;};
+{INTEGER} 	{return tINTEGER;};
 
 %%
