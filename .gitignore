@@ -1,3 +1,4 @@
 lex.yy.c
 bin/*
 y.tab.*
+*.o
