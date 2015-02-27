@@ -4,6 +4,8 @@
 int line = 1;
 %}
 
+%option nounput
+
 WHITESPACE [ \t]
 ENDLINE [\n]+
 ID [a-zA-Z][a-zA-Z0-9_]*
