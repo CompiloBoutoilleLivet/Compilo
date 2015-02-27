@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "lex.yy.h"
 #include "symtab.h"
 extern int line;
 extern struct symtab *symbol_table;
