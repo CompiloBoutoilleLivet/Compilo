@@ -27,7 +27,7 @@ Affectation : tID tEQUAL tID
 %%
 
 yyerror (char *s) {
-    fprintf (stderr, "%s\n", s);
+    fprintf (stderr, "line %d: %s\n", line, s);
 }
 
 int main(int argc, char **argv) {
