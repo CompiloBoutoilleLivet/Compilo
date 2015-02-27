@@ -3,7 +3,7 @@
 extern int line;
 %}
 
-%token tINT tMAIN tCONST tPRINTF tID tCOMA tSEMICOLON tINTEGER
+%token tINT tMAIN tCONST tPRINTF tID tCOMA tSEMICOLON tNUMBER
 %token tPLUS tMINUS tMULT tDIV tEQUAL
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
@@ -11,7 +11,7 @@ extern int line;
 %start Start
 %%
 
-Start : Main tBRAC_OPEN Declarations tBRAC_CLOSE
+Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
 
 Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
 
@@ -24,9 +24,14 @@ Variables : Variable
 Variable : tID
          | Affectation 
 
-Affectation : tID tEQUAL tID 
-	    | tID tEQUAL tINTEGER 
-		
+Affectation : tID tEQUAL ExprArith 
+
+Operations : /* empty */
+           | Operations Affectation tSEMICOLON
+
+ExprArith : tID
+          | tNUMBER
+
 %%
 
 yyerror (char *s) {

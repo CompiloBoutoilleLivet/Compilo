@@ -36,6 +36,6 @@ printf 		{return tPRINTF;};
 \) 		{return tPARENT_CLOSE;};
 ,		{return tCOMA;};
 ; 		{return tSEMICOLON;};
-{NUMBER} 	{return tINTEGER;};
+{NUMBER} 	{return tNUMBER;};
 
 %%
