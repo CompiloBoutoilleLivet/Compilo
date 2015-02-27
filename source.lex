@@ -7,7 +7,7 @@ int line = 1;
 WHITESPACE [ \t]
 ENDLINE [\n]+
 ID [a-zA-Z][a-zA-Z0-9_]*
-NUMBER ([0-9]+\.)?[0-9]([Ee][+-]?[0-9]+)?
+NUMBER ([0-9]+\.)?[0-9]+([Ee][+-]?[0-9]+)?
 
 %x COMMENT
 %%
