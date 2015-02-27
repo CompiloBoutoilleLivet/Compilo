@@ -3,11 +3,16 @@ LEX = lex
 YACC = yacc
 YACCFLAGS = -d --debug
 CC = gcc
-CFLAGS = -lfl -ly
+CFLAGS = 
+LDFLAGS = -lfl -ly
 
-all: y.tab.c lex.yy.c
+SRC = $(wildcard *.c) y.tab.c lex.yy.c
+OBJ = $(SRC:.c=.o)
+AOUT = bin/compilo
+
+all: $(OBJ)
 	mkdir -p bin
-	$(CC) -o bin/compilo y.tab.c lex.yy.c $(CFLAGS)
+	$(CC) -o $(AOUT) $^ $(LDFLAGS)
 
 lex.yy.c: source.lex y.tab.h
 	$(LEX) source.lex
@@ -15,7 +20,11 @@ lex.yy.c: source.lex y.tab.h
 y.tab.c: source.yacc
 	$(YACC) $(YACCFLAGS) source.yacc
 
+%.o: %.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+
 clean:
 	rm -rf lex.yy.c
 	rm -rf y.tab.*
+	rm -rf $(OBJ)
 	rm -rf bin/*
