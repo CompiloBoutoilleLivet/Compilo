@@ -12,30 +12,30 @@ INTEGER [0-9]+([Ee][+-]?[0-9]+)?
 %x COMMENT
 %%
 
-"/*" 				{BEGIN COMMENT;}
+"/*" 			{BEGIN COMMENT;}
 <COMMENT>\n 		{line++;}
 <COMMENT>[^\*\/] 	{}
-<COMMENT>"*/" 		{BEGIN INITIAL;}
+<COMMENT>"*/" 	        {BEGIN INITIAL;}
 
 
-{WHITESPACE} {};
+{WHITESPACE}    {};
 {ENDLINE} 	{line++;};
 main 		{return tMAIN;};
-\{ 			{return tBRAC_OPEN;};
-\} 			{return tBRAC_CLOSE;};
+\{ 		{return tBRAC_OPEN;};
+\} 		{return tBRAC_CLOSE;};
 const 		{return tCONST;};
 int 		{return tINT;};
 printf 		{return tPRINTF;};
 {ID} 		{return tID;};
-\+ 			{return tPLUS;};
-\- 			{return tMINUS;};
-\* 			{return tMULT;};
-\/ 			{return tDIV;};
-= 			{return tEQUAL;};
-\( 			{return tPARENT_OPEN;};
-\) 			{return tPARENT_CLOSE;};
-,			{return tCOMA;};
-; 			{return tSEMICOLON;};
+\+ 		{return tPLUS;};
+\- 		{return tMINUS;};
+\* 		{return tMULT;};
+\/ 		{return tDIV;};
+= 		{return tEQUAL;};
+\( 		{return tPARENT_OPEN;};
+\) 		{return tPARENT_CLOSE;};
+,		{return tCOMA;};
+; 		{return tSEMICOLON;};
 {INTEGER} 	{return tINTEGER;};
 
 %%
