@@ -24,13 +24,18 @@ Variables : Variable
 Variable : tID
          | Affectation 
 
-Affectation : tID tEQUAL ExprArith 
+Affectation : tID tEQUAL ExprArith
 
 Operations : /* empty */
            | Operations Affectation tSEMICOLON
 
 ExprArith : tID
-          | tNUMBER
+		   | tNUMBER 
+		   | tMINUS tNUMBER 
+		   | ExprArith Operator ExprArith
+		   | tPARENT_OPEN ExprArith tPARENT_CLOSE
+
+Operator : tPLUS | tMINUS | tMULT | tDIV 
 
 %%
 
@@ -44,7 +49,6 @@ int main(int argc, char **argv) {
 	{
 		yydebug = 1;
 	}
-
 	yyparse();
 	printf("Number of line(s) = %d\n", line);
 	return 0;

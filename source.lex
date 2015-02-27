@@ -7,7 +7,7 @@ int line = 1;
 WHITESPACE [ \t]
 ENDLINE [\n]+
 ID [a-zA-Z][a-zA-Z0-9_]*
-NUMBER [+-]?([0-9]+\.)?[0-9]([Ee][+-]?[0-9]+)?
+NUMBER ([0-9]+\.)?[0-9]([Ee][+-]?[0-9]+)?
 
 %x COMMENT
 %%
@@ -27,10 +27,10 @@ const 		{return tCONST;};
 int 		{return tINT;};
 printf 		{return tPRINTF;};
 {ID} 		{return tID;};
-\+ 		{return tPLUS;};
-\- 		{return tMINUS;};
-\* 		{return tMULT;};
-\/ 		{return tDIV;};
+"+" 		{return tPLUS;};
+"-" 		{return tMINUS;};
+"*" 		{return tMULT;};
+"/" 		{return tDIV;};
 = 		{return tEQUAL;};
 \( 		{return tPARENT_OPEN;};
 \) 		{return tPARENT_CLOSE;};
