@@ -19,6 +19,7 @@ struct symtab {
 };
 
 struct symtab *symtab_create(unsigned int size);
+int symtab_symbol_exists(struct symtab *tab, char *name);
 int symtab_add_symbol_notype(struct symtab *tab, char *name);
 int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type);
 
