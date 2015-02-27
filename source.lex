@@ -7,7 +7,7 @@ int line = 1;
 WHITESPACE [ \t]
 ENDLINE [\n]+
 ID [a-zA-Z][a-zA-Z0-9_]*
-INTEGER [0-9]+([Ee][+-]?[0-9]+)?
+NUMBER [+-]?([0-9]+\.)?[0-9]([Ee][+-]?[0-9]+)?
 
 %x COMMENT
 %%
@@ -36,6 +36,6 @@ printf 		{return tPRINTF;};
 \) 		{return tPARENT_CLOSE;};
 ,		{return tCOMA;};
 ; 		{return tSEMICOLON;};
-{INTEGER} 	{return tINTEGER;};
+{NUMBER} 	{return tINTEGER;};
 
 %%
