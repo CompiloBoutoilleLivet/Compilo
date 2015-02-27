@@ -3,7 +3,7 @@ LEX = lex
 YACC = yacc
 YACCFLAGS = -d --debug
 CC = gcc
-CFLAGS = 
+CFLAGS = -Wall
 LDFLAGS = -lfl -ly
 
 SRC = $(wildcard *.c) y.tab.c lex.yy.c

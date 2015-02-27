@@ -26,7 +26,10 @@ main 		{return tMAIN;};
 const 		{return tCONST;};
 int 		{return tINT;};
 printf 		{return tPRINTF;};
-{ID} 		{return tID;};
+{ID} 		{
+                        yylval.name = strdup(yytext);
+                        return tID;
+                };
 "+" 		{return tPLUS;};
 "-" 		{return tMINUS;};
 "*" 		{return tMULT;};
