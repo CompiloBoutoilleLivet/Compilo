@@ -1,5 +1,5 @@
 
 int main()
 {
-	int a=15/4;
+	printf(2);
 }

@@ -15,6 +15,8 @@ Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
 
 Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
 
+Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE 
+
 Declarations : /* empty */
 	     | Declarations tINT Variables tSEMICOLON
 
@@ -28,6 +30,7 @@ Affectation : tID tEQUAL ExprArith
 
 Operations : /* empty */
            | Operations Affectation tSEMICOLON
+           | Operations Printf tSEMICOLON
 
 ExprArith : tID
 		   | tNUMBER 
@@ -36,6 +39,7 @@ ExprArith : tID
 		   | tPARENT_OPEN ExprArith tPARENT_CLOSE
 
 Operator : tPLUS | tMINUS | tMULT | tDIV 
+
 
 %%
 
