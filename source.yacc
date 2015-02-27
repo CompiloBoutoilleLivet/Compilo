@@ -8,21 +8,24 @@ extern int line;
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
 
-%start Main
+%start Start
 %%
-Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE tBRAC_OPEN Declarations tBRAC_CLOSE
+
+Start : Main tBRAC_OPEN Declarations tBRAC_CLOSE
+
+Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
 
 Declarations : /* empty */
 	     | Declarations tINT Variables tSEMICOLON
 
 Variables : Variable
-		| Variable tCOMA Variables
+          | Variable tCOMA Variables
 
 Variable : tID
-		| Affectation 
+         | Affectation 
 
 Affectation : tID tEQUAL tID 
-		| tID tEQUAL tINTEGER 
+	    | tID tEQUAL tINTEGER 
 		
 %%
 
