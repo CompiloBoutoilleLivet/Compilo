@@ -27,16 +27,33 @@ struct symtab *symtab_create(unsigned int size)
 	return ret;
 }
 
+int symtab_add_if_not_exists(struct symtab *tab, char *name)
+{
+	int ret = FALSE;
+
+	if(symtab_symbol_not_exists(tab, name) == TRUE)
+	{
+		ret = symtab_add_symbol_notype(tab, name);
+	}
+
+	return ret;
+}
+
+int symtab_symbol_not_exists(struct symtab *tab, char *name)
+{
+	return symtab_symbol_exists(tab, name) == TRUE ? FALSE : TRUE;
+}
+
 int symtab_symbol_exists(struct symtab *tab, char *name)
 {
-	int ret = -1;
+	int ret = FALSE;
 	int i;
 
 	for(i=tab->top; i>=0; i--)
 	{
 		if(strcmp(tab->stack[i]->name, name) == 0)
 		{
-			ret = 0;
+			ret = TRUE;
 			break;
 		}
 	}
@@ -46,7 +63,7 @@ int symtab_symbol_exists(struct symtab *tab, char *name)
 
 int symtab_add_symbol_notype(struct symtab *tab, char *name)
 {
-	return symtab_add_symbol(tab, name, UNKNOWN);
+	return symtab_add_symbol(tab, name, TYPE_UNKNOWN);
 }
 
 int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type)
@@ -54,7 +71,7 @@ int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type)
 	struct symbol *s = malloc(sizeof(struct symbol));
 	if(s == NULL)
 	{
-		return -1;
+		return FALSE;
 	}
 
 	s->name = name;
@@ -63,7 +80,7 @@ int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type)
 	if(tab->top == tab->size+1) // full stack :(
 	{
 		free(s);
-		return -1;
+		return FALSE;
 	}
 
 	tab->top++;

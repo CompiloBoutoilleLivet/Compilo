@@ -15,10 +15,7 @@ int yyerror (char *s);
         int number;
         char *name;
         /* specific to rules */
-        enum enum_type {
-                TYPE_INT,
-                TYPE_CONST_INT
-        } type;
+        enum var_type type;
 }
 
 %token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
@@ -54,11 +51,9 @@ Variables : Variable
 
 Variable : tID
            {
-                if(symtab_symbol_exists(symbol_table, $1) == 0)
+                if(symtab_add_if_not_exists(symbol_table, $1) == FALSE)
                 {
                         yyerror("variable already exists");
-                } else {
-                        symtab_add_symbol_notype(symbol_table, $1);
                 }
            }
          | AffectationDec 
@@ -66,18 +61,16 @@ Variable : tID
 
 AffectationDec : tID Affectation
 		 {
-			if(symtab_symbol_exists(symbol_table, $1) == 0)
-                	{
+                        if(symtab_add_if_not_exists(symbol_table, $1) == FALSE)
+                        {
                                 yyerror("variable already exists");
-                	} else {
-                                symtab_add_symbol_notype(symbol_table, $1);
-                	}
+                        }
                  }
 	       ;
 
 AffectationOp : tID Affectation
 		{
-                	if(symtab_symbol_exists(symbol_table, $1) == 0)
+                	if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
                 	{
                 	        yyerror("variable not exists");
                 	}
@@ -94,10 +87,10 @@ Operations : /* empty */
 
 ExprArith : tID
             {
-                if(symtab_symbol_exists(symbol_table, $1) == 0)
-                {
-                        yyerror("variable not exists");
-                }
+                  if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
+                  {
+                          yyerror("variable not exists");
+                  }
             }
           | tNUMBER 
           | tMINUS tNUMBER

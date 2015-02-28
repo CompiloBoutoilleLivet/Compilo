@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "symtab.h"
 #include "y.tab.h"
 int line = 1;
 %}
