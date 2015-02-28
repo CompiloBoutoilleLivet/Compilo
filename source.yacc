@@ -11,20 +11,28 @@ int yyerror (char *s);
 
 %union
 {
-        double number;
+        /* specific to token */
+        int number;
         char *name;
+        /* specific to rules */
+        enum enum_type {
+                TYPE_INT,
+                TYPE_CONST_INT
+        } type;
 }
 
-%token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON tNUMBER
+%token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
 %token tPLUS tMINUS tMULT tDIV tEQUAL
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
-%token <name> tID;
+%token <number> tNUMBER
+%token <name> tID
 
 %left tPLUS tMINUS
 %left tMULT tDIV
 
 %start Start
+%type <type> Type
 %%
 
 Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
@@ -37,7 +45,7 @@ Printf : tPRINTF tPARENT_OPEN tID tPARENT_CLOSE
        ;
 
 Declarations : /* empty */
-	     | Declarations tINT Variables tSEMICOLON
+	     | Declarations Type Variables tSEMICOLON
              ;
 
 Variables : Variable
@@ -58,17 +66,17 @@ Variable : tID
 
 AffectationDec : tID Affectation
 		 {
-					if(symtab_symbol_exists(symbol_table, $1) == 0)
+			if(symtab_symbol_exists(symbol_table, $1) == 0)
                 	{
-                        yyerror("variable already exists");
+                                yyerror("variable already exists");
                 	} else {
-                        symtab_add_symbol_notype(symbol_table, $1);
+                                symtab_add_symbol_notype(symbol_table, $1);
                 	}
                  }
 	       ;
 
 AffectationOp : tID Affectation
-				{
+		{
                 	if(symtab_symbol_exists(symbol_table, $1) == 0)
                 	{
                 	        yyerror("variable not exists");
@@ -92,13 +100,23 @@ ExprArith : tID
                 }
             }
           | tNUMBER 
-          | tMINUS tNUMBER 
+          | tMINUS tNUMBER
           | ExprArith tPLUS ExprArith
           | ExprArith tMINUS ExprArith
           | ExprArith tMULT ExprArith
           | ExprArith tDIV ExprArith
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
           ;
+
+Type : tINT
+       {
+                $$ = TYPE_INT;
+       }
+     | tCONST tINT
+       {
+                $$ = TYPE_CONST_INT;
+       }
+     ;
 
 %%
 

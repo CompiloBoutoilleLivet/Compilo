@@ -41,6 +41,9 @@ printf 		{return tPRINTF;};
 \) 		{return tPARENT_CLOSE;};
 ,		{return tCOMA;};
 ; 		{return tSEMICOLON;};
-{NUMBER} 	{return tNUMBER;};
+{NUMBER} 	{
+                        yylval.number = atoi(yytext);
+                        return tNUMBER;
+                };
 
 %%
