@@ -21,6 +21,9 @@ int yyerror (char *s);
 %token tPARENT_OPEN tPARENT_CLOSE
 %token <name> tID;
 
+%left tPLUS tMINUS
+%left tMULT tDIV
+
 %start Start
 %%
 
@@ -90,16 +93,12 @@ ExprArith : tID
             }
           | tNUMBER 
           | tMINUS tNUMBER 
-          | ExprArith Operator ExprArith
+          | ExprArith tPLUS ExprArith
+          | ExprArith tMINUS ExprArith
+          | ExprArith tMULT ExprArith
+          | ExprArith tDIV ExprArith
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
           ;
-
-Operator : tPLUS
-         | tMINUS
-         | tMULT
-         | tDIV 
-         ;
-
 
 %%
 
