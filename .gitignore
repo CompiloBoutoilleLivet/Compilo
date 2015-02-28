@@ -2,3 +2,4 @@ bin/*
 lex.yy.*
 y.tab.*
 *.o
+y.output

@@ -2,7 +2,7 @@
 LEX = lex
 LEXFLAGS = --header-file=lex.yy.h
 YACC = yacc
-YACCFLAGS = -d --debug
+YACCFLAGS = -d --debug --verbose
 CC = gcc
 CFLAGS = -Wall
 LDFLAGS = -lfl -ly
