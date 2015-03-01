@@ -147,6 +147,34 @@ int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type)
 
 	tab->top++;
 	tab->stack[tab->top] = s;
+  symtab_printf(tab);
 
 	return tab->top;
+}
+
+void symtab_printf(struct symtab *tab){
+	int i;
+	struct symbol * s;
+
+	printf("------ Symbole Table (%d) -----\n",tab->top+1);
+	printf(" Id  |      Type      |  Name\n");
+		printf("-----|----------------|-------\n");
+	for(i=0;i<=tab->top;i++){
+		s = tab->stack[i];
+		printf("  %d  |%s|  %s \n", i, symtab_text_type(s->type), s->name);
+	}
+}
+
+char * symtab_text_type(enum var_type type){
+		switch(type){
+				default:
+				case TYPE_UNKNOWN:
+					return " TYPE_UNKNOWN   ";
+				case TYPE_INT:
+					return " TYPE_INT       ";
+				case TYPE_CONST_INT:
+					return " TYPE_CONST_INT ";
+				case TYPE_TEMP_VAR:
+					return " TYPE_TEMP_VAR  ";
+		}
 }
