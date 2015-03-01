@@ -32,6 +32,7 @@ int yyerror (char *s);
 %start Start
 %type <type> Type
 %type <symtab_off> ExprArith
+%type <symtab_off> Affectation
 
 %%
 
@@ -64,9 +65,13 @@ Variable : tID
 
 AffectationDec : tID Affectation /* declaration */
 		 {
-                        if(symtab_add_if_not_exists(symbol_table, $1) == FALSE)
+                        int new = -1;
+                        int v = symtab_pop(symbol_table);
+                        if((new = symtab_add_if_not_exists(symbol_table, $1)) == FALSE)
                         {
                                 yyerror("variable already exists");
+                        } else {
+                                printf("cop [$%d], [$%d]\n", new, v);
                         }
                  }
 	       ;
@@ -81,6 +86,9 @@ AffectationOp : tID Affectation /* operation */
               ;
 
 Affectation : tEQUAL ExprArith
+              {
+                $$ = $2;
+              }
             ;
 
 Operations : /* empty */
@@ -149,5 +157,6 @@ int main(int argc, char **argv) {
 
 	yyparse();
 	printf("Number of line(s) = %d\n", line);
+  symtab_printf(symbol_table);
 	return 0;
 }
