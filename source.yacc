@@ -42,7 +42,7 @@ Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
 Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
      ;
 
-Printf : tPRINTF tPARENT_OPEN tID tPARENT_CLOSE 
+Printf : tPRINTF tPARENT_OPEN tID tPARENT_CLOSE
        ;
 
 Declarations : /* empty */
@@ -60,7 +60,7 @@ Variable : tID
                         yyerror("variable already exists");
                 }
            }
-         | AffectationDec 
+         | AffectationDec
          ;
 
 AffectationDec : tID Affectation /* declaration */
@@ -104,12 +104,14 @@ ExprArith : tID
                   } else {
                         $$ = symtab_get_symbol(symbol_table, $1);
                   }
+                  $$ = symtab_add_symbol_temp(symbol_table);
+                  printf("cop [$%d], [$%s]\n",$$,$1);
             }
           | tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_table);
                 printf("afc [$%d], %d\n", $$, $1);
-            } 
+            }
           | tMINUS tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_table);
@@ -147,7 +149,7 @@ int yyerror (char *s) {
 
 
 int main(int argc, char **argv) {
-	
+
 	if(argc != 1) // debug
 	{
 		yydebug = 1;
