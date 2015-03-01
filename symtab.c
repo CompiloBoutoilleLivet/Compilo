@@ -147,7 +147,7 @@ int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type)
 
 	tab->top++;
 	tab->stack[tab->top] = s;
-
+	//symtab_printf(tab);
 	return tab->top;
 }
 
