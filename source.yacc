@@ -114,9 +114,10 @@ Type : tINT
 %%
 
 int yyerror (char *s) {
-    fprintf (stderr, "line %d: %s\n", line, s);
-    return -1;
+        fprintf (stderr, "line %d: %s\n", line, s);
+        exit(-1);
 }
+
 
 int main(int argc, char **argv) {
 	
