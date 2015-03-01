@@ -90,7 +90,7 @@ int symtab_symbol_exists(struct symtab *tab, char *name)
 
 	for(i=tab->top; i>=0; i--)
 	{
-		if(strcmp(tab->stack[i]->name, name) == 0)
+		if(tab->stack[i]->name != NULL && strcmp(tab->stack[i]->name, name) == 0)
 		{
 			ret = TRUE;
 			break;
@@ -108,6 +108,19 @@ Returns - FALSE if the symbol is not added for any reason
 int symtab_add_symbol_notype(struct symtab *tab, char *name)
 {
 	return symtab_add_symbol(tab, name, TYPE_UNKNOWN);
+}
+
+int symtab_add_symbol_temp(struct symtab *tab)
+{
+	return symtab_add_symbol(tab, NULL, TYPE_TEMP_VAR);
+}
+
+int symtab_pop(struct symtab *tab)
+{
+	int ret = tab->top;
+	free(tab->stack[tab->top]);
+	tab->top--;
+	return ret;
 }
 
 /*

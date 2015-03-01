@@ -97,9 +97,23 @@ ExprArith : tID
                         $$ = symtab_get_symbol(symbol_table, $1);
                   }
             }
-          | tNUMBER 
+          | tNUMBER
+            {
+                $$ = symtab_add_symbol_temp(symbol_table);
+                printf("afc [$%d], %d\n", $$, $1);
+            } 
           | tMINUS tNUMBER
+            {
+                $$ = symtab_add_symbol_temp(symbol_table);
+                printf("afc [$%d], %d\n", $$, $2*-1);
+            }
           | ExprArith tPLUS ExprArith
+            {
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_table);
+                printf("add [$%d], [$%d], [$%d]\n", $$, $1, $3);
+            }
           | ExprArith tMINUS ExprArith
           | ExprArith tMULT ExprArith
           | ExprArith tDIV ExprArith
