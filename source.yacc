@@ -16,6 +16,7 @@ int yyerror (char *s);
         char *name;
         /* specific to rules */
         enum var_type type;
+        int symtab_off;
 }
 
 %token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
@@ -30,6 +31,8 @@ int yyerror (char *s);
 
 %start Start
 %type <type> Type
+%type <symtab_off> ExprArith
+
 %%
 
 Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
@@ -59,7 +62,7 @@ Variable : tID
          | AffectationDec 
          ;
 
-AffectationDec : tID Affectation
+AffectationDec : tID Affectation /* declaration */
 		 {
                         if(symtab_add_if_not_exists(symbol_table, $1) == FALSE)
                         {
@@ -68,7 +71,7 @@ AffectationDec : tID Affectation
                  }
 	       ;
 
-AffectationOp : tID Affectation
+AffectationOp : tID Affectation /* operation */
 		{
                 	if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
                 	{
@@ -90,6 +93,8 @@ ExprArith : tID
                   if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
                   {
                           yyerror("variable not exists");
+                  } else {
+                        $$ = symtab_get_symbol(symbol_table, $1);
                   }
             }
           | tNUMBER 

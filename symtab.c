@@ -27,6 +27,23 @@ struct symtab *symtab_create(unsigned int size)
 	return ret;
 }
 
+int symtab_get_symbol(struct symtab *tab, char *name)
+{
+	int ret = FALSE;
+	int i;
+
+	for(i=tab->top; i>=0; i--)
+	{
+		if(tab->stack[i]->name != NULL && strcmp(tab->stack[i]->name, name) == 0)
+		{
+			ret = i;
+			break;
+		}
+	}
+
+	return ret;
+}
+
 int symtab_add_if_not_exists(struct symtab *tab, char *name)
 {
 	int ret = FALSE;
