@@ -6,6 +6,7 @@
 
 extern int line;
 extern struct symtab *symbol_table;
+extern struct simple_table *tmp_table;
 int yyerror (char *s);
 
 %}
@@ -34,6 +35,8 @@ int yyerror (char *s);
 %type <type> Type
 %type <symtab_off> ExprArith
 %type <symtab_off> Affectation
+%type <symtab_off> AffectationDec
+%type <symtab_off> Variable
 
 %%
 
@@ -48,20 +51,43 @@ Printf : tPRINTF tPARENT_OPEN tID tPARENT_CLOSE
 
 Declarations : /* empty */
 	     | Declarations Type Variables tSEMICOLON
-             ;
+            {
+                struct symbol *tmp = NULL;
+                int i, off;
+                for(i = 0; i<=tmp_table->top; i++)
+                {
+                    off = table_get(tmp_table, i);
+                    tmp = symbol_table->stack[off];
+                    tmp->type = $2;
+                }
+                table_flush(tmp_table);
+            }
+         ;
 
 Variables : Variable
+            {
+                table_add(tmp_table, $1);
+            }
           | Variable tCOMA Variables
+            {
+                table_add(tmp_table, $1);
+            }
           ;
 
 Variable : tID
            {
-                if(symtab_add_if_not_exists(symbol_table, $1) == FALSE)
+                int s = -1;
+                if((s = symtab_add_if_not_exists(symbol_table, $1)) == FALSE)
                 {
                         yyerror("variable already exists");
+                } else {
+                    $$ = s;
                 }
            }
          | AffectationDec
+           {
+              $$ = $1;
+           }
          ;
 
 AffectationDec : tID Affectation /* declaration */
@@ -73,6 +99,7 @@ AffectationDec : tID Affectation /* declaration */
                                 yyerror("variable already exists");
                         } else {
                                 printf("cop [$%d], [$%d]\n", new, v);
+                                $$ = new;
                         }
                  }
 	       ;
@@ -213,6 +240,7 @@ int main(int argc, char **argv) {
     }
 
     symbol_table = symtab_create(256);
+    tmp_table = table_create(256);
 
 	yyparse();
 

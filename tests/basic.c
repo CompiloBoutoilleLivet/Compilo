@@ -1,6 +1,6 @@
 
 int main()
 {
-	int a = 1 + 2 + 3;
+	const int a = 1 + 2 + 3, x;
 	int b = a + 1;
 }

@@ -4,6 +4,7 @@
 #include "symtab.h"
 
 struct symtab *symbol_table = NULL;
+struct simple_table *tmp_table = NULL;
 
 /*
 Create a symbol table of size `size`
@@ -176,4 +177,50 @@ char * symtab_text_type(enum var_type type){
 				case TYPE_TEMP_VAR:
 					return " TYPE_TEMP_VAR  ";
 		}
+}
+
+struct simple_table *table_create(unsigned int size)
+{
+	struct simple_table *ret = malloc(sizeof(struct simple_table));
+	if(ret == NULL)
+	{
+		return NULL;
+	}
+
+	ret->size = size;
+	ret->top = -1;
+	ret->tab = malloc(sizeof(int)*size);
+	if(ret->tab == NULL)
+	{
+		return NULL;
+	}
+
+	return ret;
+}
+
+int table_add(struct simple_table * tab, int value)
+{
+	if(tab->top == tab->size-1)
+	{
+		return FALSE;
+	}
+
+	tab->top++;
+	tab->tab[tab->top] = value;
+
+	return TRUE;
+}
+
+int table_get(struct simple_table * tab, int off)
+{
+	if(off <= tab->top)
+	{
+		return tab->tab[off];
+	}
+	return FALSE;
+}
+
+void table_flush(struct simple_table *tab)
+{
+	tab->top = -1;
 }

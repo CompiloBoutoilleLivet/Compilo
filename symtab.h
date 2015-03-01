@@ -34,4 +34,15 @@ int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type);
 void symtab_printf(struct symtab *tab);
 char * symtab_text_type(enum var_type type);
 
+struct simple_table {
+	unsigned int size;
+	unsigned int top;
+	int *tab;
+};
+
+struct simple_table *table_create(unsigned int size);
+int table_add(struct simple_table * tab, int value);
+int table_get(struct simple_table * tab, int off);
+void table_flush(struct simple_table *tab);
+
 #endif
