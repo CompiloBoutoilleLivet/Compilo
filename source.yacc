@@ -130,10 +130,10 @@ ExprArith : tID
                   {
                           yyerror("variable not exists");
                   } else {
-                        $$ = symtab_get_symbol(symbol_table, $1);
+                        int s = symtab_get_symbol(symbol_table, $1);
+                        $$ = symtab_add_symbol_temp(symbol_table);
+                        printf("cop [$%d], [$%d]\n", $$, s);
                   }
-                  $$ = symtab_add_symbol_temp(symbol_table);
-                  printf("cop [$%d], [$%s]\n",$$,$1);
             }
           | tNUMBER
             {
