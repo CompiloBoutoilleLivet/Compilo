@@ -129,6 +129,9 @@ ExprArith : tID
           | ExprArith tMULT ExprArith
           | ExprArith tDIV ExprArith
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
+            {
+                $$ = $2;
+            }
           ;
 
 Type : tINT
