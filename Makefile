@@ -12,7 +12,6 @@ OBJ = $(SRC:.c=.o)
 AOUT = bin/compilo
 
 all: $(OBJ)
-	mkdir -p bin
 	$(CC) -o $(AOUT) $^ $(LDFLAGS)
 
 lex.yy.c: source.lex y.tab.c

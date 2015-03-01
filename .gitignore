@@ -1,4 +1,4 @@
-bin/*
+bin/compilo
 lex.yy.*
 y.tab.*
 *.o
