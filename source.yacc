@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 		yydebug = 1;
 	}
 
-        symbol_table = symtab_create(256);
+    symbol_table = symtab_create(256);
 
 	yyparse();
 	printf("Number of line(s) = %d\n", line);

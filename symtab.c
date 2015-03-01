@@ -5,6 +5,10 @@
 
 struct symtab *symbol_table = NULL;
 
+/*
+Create a symbol table of size `size`
+Returns a ptr to the symtab created
+*/
 struct symtab *symtab_create(unsigned int size)
 {
 	unsigned int i;
@@ -27,6 +31,9 @@ struct symtab *symtab_create(unsigned int size)
 	return ret;
 }
 
+/*
+Returns the first symbol offset in `tab` which had `name`
+*/
 int symtab_get_symbol(struct symtab *tab, char *name)
 {
 	int ret = FALSE;
@@ -44,6 +51,13 @@ int symtab_get_symbol(struct symtab *tab, char *name)
 	return ret;
 }
 
+/*
+Add symbol `name` on `tab` only if it doesn't exists yet
+The symbol had no specific type (TYPE_UNKNOWN)
+Returns - FALSE if the symbol is not added for any reason
+        - the offset on the symtab if there is no problem
+
+*/
 int symtab_add_if_not_exists(struct symtab *tab, char *name)
 {
 	int ret = FALSE;
@@ -56,11 +70,19 @@ int symtab_add_if_not_exists(struct symtab *tab, char *name)
 	return ret;
 }
 
+/*
+Returns - TRUE if the symbol not exists in tab
+		- FALSE if the symbol exists in tab
+*/
 int symtab_symbol_not_exists(struct symtab *tab, char *name)
 {
 	return symtab_symbol_exists(tab, name) == TRUE ? FALSE : TRUE;
 }
 
+/*
+Returns - TRUE if the symbol exists in tab
+		- FALSE if the symbol not exists in tab
+*/
 int symtab_symbol_exists(struct symtab *tab, char *name)
 {
 	int ret = FALSE;
@@ -78,11 +100,21 @@ int symtab_symbol_exists(struct symtab *tab, char *name)
 	return ret;
 }
 
+/*
+Add symbol `name` on `tab` with no specific type (TYPE_UNKNOWN)
+Returns - FALSE if the symbol is not added for any reason
+        - the offset on the symtab if there is no problem
+*/
 int symtab_add_symbol_notype(struct symtab *tab, char *name)
 {
 	return symtab_add_symbol(tab, name, TYPE_UNKNOWN);
 }
 
+/*
+Add symbol `name` with type `type` to the symtab
+Returns - FALSE if the symbol is not added for any reason
+        - the offset on the symtab if there is no problem
+*/
 int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type)
 {
 	struct symbol *s = malloc(sizeof(struct symbol));
