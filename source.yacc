@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "lex.yy.h"
 #include "symtab.h"
+#include "instructions.h"
 
 extern int line;
 extern struct symtab *symbol_table;
@@ -99,6 +100,7 @@ AffectationDec : tID Affectation /* declaration */
                                 yyerror("variable already exists");
                         } else {
                                 printf("cop [$%d], [$%d]\n", new, v);
+                                instr_emit_cop(new, v);
                                 $$ = new;
                         }
                  }
@@ -133,6 +135,7 @@ ExprArith : tID
                         int s = symtab_get_symbol(symbol_table, $1);
                         $$ = symtab_add_symbol_temp(symbol_table);
                         printf("cop [$%d], [$%d]\n", $$, s);
+                        instr_emit_cop($$, s);
                   }
             }
           | tNUMBER
@@ -241,6 +244,7 @@ int main(int argc, char **argv) {
 
     symbol_table = symtab_create(256);
     tmp_table = table_create(256);
+    instr_manager_init();
 
 	yyparse();
 
@@ -249,6 +253,8 @@ int main(int argc, char **argv) {
         printf("Number of line(s) = %d\n", line);
         symtab_printf(symbol_table);
     }
+
+    instr_manager_print_textual();
 
 	return EXIT_SUCCESS;
 }
