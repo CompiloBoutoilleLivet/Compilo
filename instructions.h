@@ -34,6 +34,7 @@ struct instr_manager
 
 void instr_manager_init();
 void instr_manager_print_textual();
+void instr_manager_print_textual_file(FILE *f);
 void instr_emit_cop(int dest, int source);
 void instr_emit_afc(int dest, int value);
 void instr_emit_add(int dest, int op1, int op2);

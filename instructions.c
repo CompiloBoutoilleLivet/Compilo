@@ -17,6 +17,11 @@ void instr_manager_init()
 
 void instr_manager_print_textual()
 {
+	instr_manager_print_textual_file(stdout);
+}
+
+void instr_manager_print_textual_file(FILE *f)
+{
 	struct instr *instr = NULL;
 	if(instr_manager != NULL)
 	{
@@ -27,15 +32,15 @@ void instr_manager_print_textual()
 			{
 
 				case COP_INSTR:
-					printf("cop [$%d], [$%d]\n", instr->params[0], instr->params[1]);
+					fprintf(f, "cop [$%d], [$%d]\n", instr->params[0], instr->params[1]);
 					break;
 
 				case AFC_INSTR:
-					printf("afc [$%d], %d\n", instr->params[0], instr->params[1]);
+					fprintf(f, "afc [$%d], %d\n", instr->params[0], instr->params[1]);
 					break;
 
 				case ADD_INSTR:
-					printf("add [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
+					fprintf(f, "add [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
 					break;
 
 				default:
