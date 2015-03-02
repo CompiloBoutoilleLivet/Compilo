@@ -151,7 +151,7 @@ ExprArith : tID
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
                 $$ = symtab_add_symbol_temp(symbol_table);
-                printf("add [$%d], [$%d], [$%d]\n", $$, $1, $3);
+                instr_emit_add($$, $1, $3);
             }
           | ExprArith tMINUS ExprArith
           | ExprArith tMULT ExprArith

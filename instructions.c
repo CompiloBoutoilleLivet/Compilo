@@ -34,6 +34,10 @@ void instr_manager_print_textual()
 					printf("afc [$%d], %d\n", instr->params[0], instr->params[1]);
 					break;
 
+				case ADD_INSTR:
+					printf("add [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
+					break;
+
 				default:
 					printf("instr_manager : unknow opcode ...\n");
 					exit(-1);
@@ -42,6 +46,25 @@ void instr_manager_print_textual()
 			instr = instr->next;
 		}
 	}
+}
+
+struct instr *instr_init_instr(enum instr_type type, int psize)
+{
+	struct instr *ret = NULL;
+
+	ret = malloc(sizeof(struct instr));
+	if(ret != NULL)
+	{
+		ret->type = type;
+		ret->params = malloc(sizeof(int)*2);
+		if(ret->params == NULL)
+		{
+			free(ret);
+			ret = NULL;
+		}
+	}
+
+	return ret;
 }
 
 void instr_emit_instr(struct instr *instr)
@@ -63,32 +86,34 @@ void instr_emit_instr(struct instr *instr)
 
 void instr_emit_cop(int dest, int source)
 {
-	struct instr *instr = malloc(sizeof(struct instr));
-	if(instr != NULL)
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(COP_INSTR, 2)) != NULL)
 	{
-		instr->type = COP_INSTR;
-		instr->params = malloc(sizeof(int)*2);
-		if(instr->params != NULL)
-		{
-			instr->params[0] = dest;
-			instr->params[1] = source;
-			instr_emit_instr(instr);
-		}
+		instr->params[0] = dest;
+		instr->params[1] = source;
+		instr_emit_instr(instr);
 	}
 }
 
 void instr_emit_afc(int dest, int value)
 {
-	struct instr *instr = malloc(sizeof(struct instr));
-	if(instr != NULL)
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(AFC_INSTR, 2)) != NULL)
 	{
-		instr->type = AFC_INSTR;
-		instr->params = malloc(sizeof(int)*2);
-		if(instr->params != NULL)
-		{
-			instr->params[0] = dest;
-			instr->params[1] = value;
-			instr_emit_instr(instr);
-		}
+		instr->params[0] = dest;
+		instr->params[1] = value;
+		instr_emit_instr(instr);
+	}
+}
+
+void instr_emit_add(int dest, int op1, int op2)
+{
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(ADD_INSTR, 3)) != NULL)
+	{
+		instr->params[0] = dest;
+		instr->params[1] = op1;
+		instr->params[2] = op2;
+		instr_emit_instr(instr);
 	}
 }
