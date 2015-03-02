@@ -99,7 +99,6 @@ AffectationDec : tID Affectation /* declaration */
                         {
                                 yyerror("variable already exists");
                         } else {
-                                printf("cop [$%d], [$%d]\n", new, v);
                                 instr_emit_cop(new, v);
                                 $$ = new;
                         }
@@ -134,19 +133,18 @@ ExprArith : tID
                   } else {
                         int s = symtab_get_symbol(symbol_table, $1);
                         $$ = symtab_add_symbol_temp(symbol_table);
-                        printf("cop [$%d], [$%d]\n", $$, s);
                         instr_emit_cop($$, s);
                   }
             }
           | tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_table);
-                printf("afc [$%d], %d\n", $$, $1);
+                instr_emit_afc($$, $1);
             }
           | tMINUS tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_table);
-                printf("afc [$%d], %d\n", $$, $2*-1);
+                instr_emit_afc($$, $2*-1);
             }
           | ExprArith tPLUS ExprArith
             {

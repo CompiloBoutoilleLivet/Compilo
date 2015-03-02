@@ -30,6 +30,10 @@ void instr_manager_print_textual()
 					printf("cop [$%d], [$%d]\n", instr->params[0], instr->params[1]);
 					break;
 
+				case AFC_INSTR:
+					printf("afc [$%d], %d\n", instr->params[0], instr->params[1]);
+					break;
+
 				default:
 					printf("instr_manager : unknow opcode ...\n");
 					exit(-1);
@@ -73,3 +77,18 @@ void instr_emit_cop(int dest, int source)
 	}
 }
 
+void instr_emit_afc(int dest, int value)
+{
+	struct instr *instr = malloc(sizeof(struct instr));
+	if(instr != NULL)
+	{
+		instr->type = AFC_INSTR;
+		instr->params = malloc(sizeof(int)*2);
+		if(instr->params != NULL)
+		{
+			instr->params[0] = dest;
+			instr->params[1] = value;
+			instr_emit_instr(instr);
+		}
+	}
+}
