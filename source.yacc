@@ -8,6 +8,7 @@
 extern int line;
 extern struct symtab *symbol_table;
 extern struct simple_table *tmp_table;
+extern struct instr_manager *instr_manager;
 int yyerror (char *s);
 
 %}
@@ -186,6 +187,7 @@ void print_usage(char *s)
     printf("\t -d \t\t enable parser debug\n");
     printf("\t -s \t\t enable symtab debug\n");
     printf("\t -f <filename>\t filename to parse\n");
+    printf("\t -a <filename>\t filename to write assembly\n");
     printf("\t\t\t if -f is not specified, stdin is parsed\n");
 }
 
@@ -193,10 +195,12 @@ int main(int argc, char **argv) {
     int dflag = 0;
     int sflag = 0;
     char *filename = NULL;
-    FILE *f = NULL;
+    char *output_asm = NULL;
+    FILE *fin = NULL;
+    FILE *fout_asm = NULL;
     int c = 0;
 
-    while((c = getopt(argc, argv, "hd::s::f:")) != -1)
+    while((c = getopt(argc, argv, "hd::s::f:a:")) != -1)
     {
         switch(c)
         {
@@ -213,8 +217,12 @@ int main(int argc, char **argv) {
                 sflag = 1;
                 break;
 
-            case 'f':
+            case 'f': // stdin
                 filename = optarg;
+                break;
+
+            case 'a': // asm stdout
+                output_asm = optarg;
                 break;
 
             case '?':
@@ -231,13 +239,26 @@ int main(int argc, char **argv) {
 
     if(filename != NULL)
     {
-        f = fopen(filename, "r");
-        if(f == NULL)
+        fin = fopen(filename, "r");
+        if(fin == NULL)
         {
             printf("%s not found ...\n", filename);
             return EXIT_FAILURE;
         }
-        yyin = f;
+        printf("Reading from file %s\n", filename);
+        yyin = fin;
+    }
+
+    if(output_asm != NULL)
+    {
+        fout_asm = fopen(output_asm, "w+");
+        if(fout_asm == NULL)
+        {
+            printf("%s not found ...\n", output_asm);
+            return EXIT_FAILURE;
+        } else {
+            printf("fout_asm = %p\n", fout_asm);
+        }
     }
 
     symbol_table = symtab_create(256);
@@ -252,7 +273,13 @@ int main(int argc, char **argv) {
         symtab_printf(symbol_table);
     }
 
-    instr_manager_print_textual();
+    printf("%d instructions generated\n", instr_manager->count);
+    if(fout_asm == NULL)
+    {
+        instr_manager_print_textual();
+    } else {
+        instr_manager_print_textual_file(fout_asm);
+    }
 
 	return EXIT_SUCCESS;
 }
