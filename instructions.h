@@ -9,7 +9,10 @@ un fichier avec les instructions sous forme textuelle ou alors
 les instructions directement sous forme de bytecode. On pourrait imaginer
 interpréter directement la liste d'instructions, on aurait alors un
 langage interprété.
-Je ne sais pas si y'a vraiment un intérêt mais j'aime bien le concept.
+
+Ca pourrait aussi faciliter les jump conditionels ou non
+
+Je ne sais pas si y'a vraiment un intérêt mais c'est cool
 */
 
 enum instr_type {
