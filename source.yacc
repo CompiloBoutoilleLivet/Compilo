@@ -3,10 +3,12 @@
 #include <unistd.h>
 #include "lex.yy.h"
 #include "symtab.h"
+#include "instructions.h"
 
 extern int line;
 extern struct symtab *symbol_table;
 extern struct simple_table *tmp_table;
+extern struct instr_manager *instr_manager;
 int yyerror (char *s);
 
 %}
@@ -98,7 +100,7 @@ AffectationDec : tID Affectation /* declaration */
                         {
                                 yyerror("variable already exists");
                         } else {
-                                printf("cop [$%d], [$%d]\n", new, v);
+                                instr_emit_cop(new, v);
                                 $$ = new;
                         }
                  }
@@ -132,25 +134,25 @@ ExprArith : tID
                   } else {
                         int s = symtab_get_symbol(symbol_table, $1);
                         $$ = symtab_add_symbol_temp(symbol_table);
-                        printf("cop [$%d], [$%d]\n", $$, s);
+                        instr_emit_cop($$, s);
                   }
             }
           | tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_table);
-                printf("afc [$%d], %d\n", $$, $1);
+                instr_emit_afc($$, $1);
             }
           | tMINUS tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_table);
-                printf("afc [$%d], %d\n", $$, $2*-1);
+                instr_emit_afc($$, $2*-1);
             }
           | ExprArith tPLUS ExprArith
             {
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
                 $$ = symtab_add_symbol_temp(symbol_table);
-                printf("add [$%d], [$%d], [$%d]\n", $$, $1, $3);
+                instr_emit_add($$, $1, $3);
             }
           | ExprArith tMINUS ExprArith
           | ExprArith tMULT ExprArith
@@ -185,6 +187,7 @@ void print_usage(char *s)
     printf("\t -d \t\t enable parser debug\n");
     printf("\t -s \t\t enable symtab debug\n");
     printf("\t -f <filename>\t filename to parse\n");
+    printf("\t -a <filename>\t filename to write assembly\n");
     printf("\t\t\t if -f is not specified, stdin is parsed\n");
 }
 
@@ -192,10 +195,12 @@ int main(int argc, char **argv) {
     int dflag = 0;
     int sflag = 0;
     char *filename = NULL;
-    FILE *f = NULL;
+    char *output_asm = NULL;
+    FILE *fin = NULL;
+    FILE *fout_asm = NULL;
     int c = 0;
 
-    while((c = getopt(argc, argv, "hd::s::f:")) != -1)
+    while((c = getopt(argc, argv, "hd::s::f:a:")) != -1)
     {
         switch(c)
         {
@@ -212,8 +217,12 @@ int main(int argc, char **argv) {
                 sflag = 1;
                 break;
 
-            case 'f':
+            case 'f': // stdin
                 filename = optarg;
+                break;
+
+            case 'a': // asm stdout
+                output_asm = optarg;
                 break;
 
             case '?':
@@ -230,17 +239,31 @@ int main(int argc, char **argv) {
 
     if(filename != NULL)
     {
-        f = fopen(filename, "r");
-        if(f == NULL)
+        fin = fopen(filename, "r");
+        if(fin == NULL)
         {
             printf("%s not found ...\n", filename);
             return EXIT_FAILURE;
         }
-        yyin = f;
+        printf("Reading from file %s\n", filename);
+        yyin = fin;
+    }
+
+    if(output_asm != NULL)
+    {
+        fout_asm = fopen(output_asm, "w+");
+        if(fout_asm == NULL)
+        {
+            printf("%s not found ...\n", output_asm);
+            return EXIT_FAILURE;
+        } else {
+            printf("fout_asm = %p\n", fout_asm);
+        }
     }
 
     symbol_table = symtab_create(256);
     tmp_table = table_create(256);
+    instr_manager_init();
 
 	yyparse();
 
@@ -248,6 +271,14 @@ int main(int argc, char **argv) {
     {
         printf("Number of line(s) = %d\n", line);
         symtab_printf(symbol_table);
+    }
+
+    printf("%d instructions generated\n", instr_manager->count);
+    if(fout_asm == NULL)
+    {
+        instr_manager_print_textual();
+    } else {
+        instr_manager_print_textual_file(fout_asm);
     }
 
 	return EXIT_SUCCESS;
