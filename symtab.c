@@ -158,10 +158,14 @@ void symtab_printf(struct symtab *tab){
 
 	printf("------ Symbole Table (%d) -----\n",tab->top+1);
 	printf(" Id  |      Type      |  Name\n");
-		printf("-----|----------------|-------\n");
-	for(i=0;i<=tab->top;i++){
-		s = tab->stack[i];
-		printf("  %d  |%s|  %s \n", i, symtab_text_type(s->type), s->name);
+	printf("-----|----------------|-------\n");
+
+	if(tab->top != -1)
+	{
+		for(i=0;i<=tab->top;i++){
+			s = tab->stack[i];
+			printf("  %d  |%s|  %s \n", i, symtab_text_type(s->type), s->name);
+		}
 	}
 }
 
