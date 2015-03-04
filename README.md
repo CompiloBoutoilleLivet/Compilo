@@ -43,6 +43,7 @@ Le binaire généré propose plusieurs options :
 - `-d` : activer la sortie de debug du parser. La sortie est généré par défaut par yacc et permet de visualiser l'enchainement des différents shift/reduce
 - `-s` : permet d'afficher la table des symboles à la fin de la compilation
 - `-f` : permet de spécifier le fichier à parser. Par défaut `stdin` est lu.
+- `-S` : permet de spécifier le fichier où écrire le code assembleur. Par défaut `stdout`.
 
 Exemple :
 ```
@@ -53,7 +54,11 @@ int main()
 	const int a = 1 + 2 + 3, x;
 	int b = a + 1;
 }
-[tlk:~/INSA/S2/automates/Compilo]$ ./bin/compilo -f tests/basic.c -s
+[tlk:~/INSA/S2/automates/Compilo]$ ./bin/compilo -f tests/basic.c -S basic.asm 
+[+] Reading from file tests/basic.c
+[+] 10 instructions generated
+[+] Writing asm to basic.asm
+[tlk:~/INSA/S2/automates/Compilo]$ cat basic.asm
 afc [$0], 1
 afc [$1], 2
 add [$0], [$0], [$1]
@@ -64,12 +69,4 @@ cop [$2], [$0]
 afc [$3], 1
 add [$2], [$2], [$3]
 cop [$2], [$2]
-Number of line(s) = 7
------- Symbole Table (3) -----
- Id  |      Type      |  Name
------|----------------|-------
-  0  | TYPE_CONST_INT |  a 
-  1  | TYPE_CONST_INT |  x 
-  2  | TYPE_INT       |  b 
-  ```
 

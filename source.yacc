@@ -187,8 +187,8 @@ void print_usage(char *s)
     printf("\t -d \t\t enable parser debug\n");
     printf("\t -s \t\t enable symtab debug\n");
     printf("\t -f <filename>\t filename to parse\n");
-    printf("\t -a <filename>\t filename to write assembly\n");
     printf("\t\t\t if -f is not specified, stdin is parsed\n");
+    printf("\t -S <filename>\t filename to write assembly\n");
 }
 
 int main(int argc, char **argv) {
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
     FILE *fout_asm = NULL;
     int c = 0;
 
-    while((c = getopt(argc, argv, "hd::s::f:a:")) != -1)
+    while((c = getopt(argc, argv, "hd::s::f:S:")) != -1)
     {
         switch(c)
         {
@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
                 filename = optarg;
                 break;
 
-            case 'a': // asm stdout
+            case 'S': // asm stdout
                 output_asm = optarg;
                 break;
 
@@ -242,10 +242,10 @@ int main(int argc, char **argv) {
         fin = fopen(filename, "r");
         if(fin == NULL)
         {
-            printf("%s not found ...\n", filename);
+            printf("[-] %s not found ...\n", filename);
             return EXIT_FAILURE;
         }
-        printf("Reading from file %s\n", filename);
+        printf("[+] Reading from file %s\n", filename);
         yyin = fin;
     }
 
@@ -254,10 +254,8 @@ int main(int argc, char **argv) {
         fout_asm = fopen(output_asm, "w+");
         if(fout_asm == NULL)
         {
-            printf("%s not found ...\n", output_asm);
+            printf("[-] unable to create %s ...\n", output_asm);
             return EXIT_FAILURE;
-        } else {
-            printf("fout_asm = %p\n", fout_asm);
         }
     }
 
@@ -269,15 +267,16 @@ int main(int argc, char **argv) {
 
     if(sflag)
     {
-        printf("Number of line(s) = %d\n", line);
+        printf("[+] Number of line(s) = %d\n", line);
         symtab_printf(symbol_table);
     }
 
-    printf("%d instructions generated\n", instr_manager->count);
+    printf("[+] %d instructions generated\n", instr_manager->count);
     if(fout_asm == NULL)
     {
         instr_manager_print_textual();
     } else {
+        printf("[+] Writing asm to %s\n", output_asm);
         instr_manager_print_textual_file(fout_asm);
     }
 
