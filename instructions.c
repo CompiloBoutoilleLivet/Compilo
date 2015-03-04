@@ -55,6 +55,10 @@ void instr_manager_print_textual_file(FILE *f)
 					fprintf(f, "div [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
 					break;	
 
+				case PRI_INSTR:
+					fprintf(f, "pri [$%d]\n", instr->params[0]);
+					break;
+
 				default:
 					printf("instr_manager : unknow opcode ...\n");
 					exit(-1);
@@ -171,3 +175,12 @@ void instr_emit_div(int dest, int op1, int op2)
 	}
 }
 
+void instr_emit_pri(int what)
+{
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(PRI_INSTR, 1)) != NULL)
+	{
+		instr->params[0] = what;
+		instr_emit_instr(instr);
+	}
+}

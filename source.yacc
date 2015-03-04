@@ -48,7 +48,11 @@ Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
 Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
      ;
 
-Printf : tPRINTF tPARENT_OPEN tID tPARENT_CLOSE
+Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
+         {
+            symtab_pop(symbol_table);
+            instr_emit_pri($3);
+         }
        ;
 
 Declarations : /* empty */
