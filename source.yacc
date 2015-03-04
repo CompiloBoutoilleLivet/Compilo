@@ -140,7 +140,11 @@ Affectation : tEQUAL ExprArith
               }
             ;
 
-IfElse : tIF tPARENT_OPEN Conditions tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE tELSE tBRAC_OPEN Operations tBRAC_CLOSE
+If : tIF tPARENT_OPEN Conditions tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
+
+IfElse : If
+       | If Else
        ;
 
 Conditions : /* empty */ /* TODO */

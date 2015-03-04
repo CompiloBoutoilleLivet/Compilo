@@ -5,7 +5,10 @@ int main()
 	int b;
 
 	if() {
-		a = 1;
+		a = 6;
+		if(){
+			a = 4;
+		}
 	} else {
 		printf(a);
 	}
