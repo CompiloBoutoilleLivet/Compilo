@@ -112,6 +112,13 @@ AffectationOp : tID Affectation /* operation */
                 	{
                 	        yyerror("variable not exists");
                 	}
+
+                    struct symbol *s = symbol_table->stack[symtab_get_symbol(symbol_table, $1)];
+                    if(s->type == TYPE_CONST_INT)
+                    {
+                        yyerror("variable is assigned but it is a declared as a const");
+                    }
+
             	}
               ;
 
