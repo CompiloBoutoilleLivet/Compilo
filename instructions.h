@@ -16,9 +16,18 @@ Je ne sais pas si y'a vraiment un intérêt mais c'est cool
 */
 
 enum instr_type {
+	ADD_INSTR,
+	MUL_INSTR,
+	SOU_INSTR,
+	DIV_INSTR,
 	COP_INSTR,
 	AFC_INSTR,
-	ADD_INSTR
+	JMP_INSTR,
+	JMF_INSTR,
+	INF_INSTR,
+	SUP_INSTR,
+	EQU_INSTR,
+	PRI_INSTR
 };
 
 struct instr
@@ -41,5 +50,6 @@ void instr_manager_print_textual_file(FILE *f);
 void instr_emit_cop(int dest, int source);
 void instr_emit_afc(int dest, int value);
 void instr_emit_add(int dest, int op1, int op2);
+void instr_emit_sou(int dest, int op1, int op2);
 
 #endif
