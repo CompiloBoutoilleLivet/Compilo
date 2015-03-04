@@ -51,5 +51,6 @@ void instr_emit_cop(int dest, int source);
 void instr_emit_afc(int dest, int value);
 void instr_emit_add(int dest, int op1, int op2);
 void instr_emit_sou(int dest, int op1, int op2);
+void instr_emit_mul(int dest, int op1, int op2);
 
 #endif

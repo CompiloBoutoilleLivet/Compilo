@@ -47,6 +47,10 @@ void instr_manager_print_textual_file(FILE *f)
 					fprintf(f, "sou [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
 					break;
 
+				case MUL_INSTR:
+					fprintf(f, "mul [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
+					break;
+
 				default:
 					printf("instr_manager : unknow opcode ...\n");
 					exit(-1);
@@ -131,6 +135,18 @@ void instr_emit_sou(int dest, int op1, int op2)
 {
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(SOU_INSTR, 3)) != NULL)
+	{
+		instr->params[0] = dest;
+		instr->params[1] = op1;
+		instr->params[2] = op2;
+		instr_emit_instr(instr);
+	}
+}
+
+void instr_emit_mul(int dest, int op1, int op2)
+{
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(MUL_INSTR, 3)) != NULL)
 	{
 		instr->params[0] = dest;
 		instr->params[1] = op1;
