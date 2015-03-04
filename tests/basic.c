@@ -1,6 +1,5 @@
 
 int main()
 {
-	const int a = 1 * 3, x;
-	int b = a + 1;
+	const int a = 1 + 2 / 3 * 4 - 5;
 }

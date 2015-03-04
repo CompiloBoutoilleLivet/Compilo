@@ -169,6 +169,12 @@ ExprArith : tID
                 instr_emit_mul($$, $1, $3);
             }
           | ExprArith tDIV ExprArith
+            {
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_table);
+                instr_emit_div($$, $1, $3);
+            }
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
             {
                 $$ = $2;
