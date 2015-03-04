@@ -194,8 +194,8 @@ void print_usage(char *s)
 int main(int argc, char **argv) {
     int dflag = 0;
     int sflag = 0;
-    char *filename = NULL;
-    char *output_asm = NULL;
+    char *filename_in = NULL;
+    char *filemane_out_asm = NULL;
     FILE *fin = NULL;
     FILE *fout_asm = NULL;
     int c = 0;
@@ -218,11 +218,11 @@ int main(int argc, char **argv) {
                 break;
 
             case 'f': // stdin
-                filename = optarg;
+                filename_in = optarg;
                 break;
 
             case 'S': // asm stdout
-                output_asm = optarg;
+                filemane_out_asm = optarg;
                 break;
 
             case '?':
@@ -237,24 +237,24 @@ int main(int argc, char **argv) {
         yydebug = 1;
     }
 
-    if(filename != NULL)
+    if(filename_in != NULL)
     {
-        fin = fopen(filename, "r");
+        fin = fopen(filename_in, "r");
         if(fin == NULL)
         {
-            printf("[-] %s not found ...\n", filename);
+            printf("[-] %s not found ...\n", filename_in);
             return EXIT_FAILURE;
         }
-        printf("[+] Reading from file %s\n", filename);
+        printf("[+] Reading from file %s\n", filename_in);
         yyin = fin;
     }
 
-    if(output_asm != NULL)
+    if(filemane_out_asm != NULL)
     {
-        fout_asm = fopen(output_asm, "w+");
+        fout_asm = fopen(filemane_out_asm, "w+");
         if(fout_asm == NULL)
         {
-            printf("[-] unable to create %s ...\n", output_asm);
+            printf("[-] unable to create %s ...\n", filemane_out_asm);
             return EXIT_FAILURE;
         }
     }
@@ -276,7 +276,7 @@ int main(int argc, char **argv) {
     {
         instr_manager_print_textual();
     } else {
-        printf("[+] Writing asm to %s\n", output_asm);
+        printf("[+] Writing asm to %s\n", filemane_out_asm);
         instr_manager_print_textual_file(fout_asm);
     }
 
