@@ -29,6 +29,8 @@ main 		{return tMAIN;};
 const 		{return tCONST;};
 int 		{return tINT;};
 printf 		{return tPRINTF;};
+if              {return tIF;};
+else            {return tELSE;};
 {ID} 		{
                         yylval.name = strdup(yytext);
                         return tID;

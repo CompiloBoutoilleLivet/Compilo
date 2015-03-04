@@ -27,6 +27,7 @@ int yyerror (char *s);
 %token tPLUS tMINUS tMULT tDIV tEQUAL
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
+%token tIF tELSE
 %token <number> tNUMBER
 %token <name> tID
 
@@ -60,13 +61,16 @@ Declarations : /* empty */
             {
                 struct symbol *tmp = NULL;
                 int i, off;
-                for(i = 0; i<=tmp_table->top; i++)
+                if(tmp_table->top != -1)
                 {
-                    off = table_get(tmp_table, i);
-                    tmp = symbol_table->stack[off];
-                    tmp->type = $2;
+                    for(i = 0; i<=tmp_table->top; i++)
+                    {
+                        off = table_get(tmp_table, i);
+                        tmp = symbol_table->stack[off];
+                        tmp->type = $2;
+                    }
+                    table_flush(tmp_table);
                 }
-                table_flush(tmp_table);
             }
          ;
 
@@ -117,10 +121,14 @@ AffectationOp : tID Affectation /* operation */
                 	        yyerror("variable not exists");
                 	}
 
-                    struct symbol *s = symbol_table->stack[symtab_get_symbol(symbol_table, $1)];
+                    int dest = symtab_get_symbol(symbol_table, $1);
+                    struct symbol *s = symbol_table->stack[dest];
+                    int v = symtab_pop(symbol_table);
                     if(s->type == TYPE_CONST_INT)
                     {
                         yyerror("variable is assigned but it is a declared as a const");
+                    } else {
+                        instr_emit_cop(dest, v);
                     }
 
             	}
@@ -132,9 +140,16 @@ Affectation : tEQUAL ExprArith
               }
             ;
 
+IfElse : tIF tPARENT_OPEN Conditions tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE tELSE tBRAC_OPEN Operations tBRAC_CLOSE
+       ;
+
+Conditions : /* empty */ /* TODO */
+           ;
+
 Operations : /* empty */
            | Operations AffectationOp tSEMICOLON
            | Operations Printf tSEMICOLON
+           | Operations IfElse
            ;
 
 ExprArith : tID
