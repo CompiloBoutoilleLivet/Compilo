@@ -27,7 +27,8 @@ enum instr_type {
 	INF_INSTR,
 	SUP_INSTR,
 	EQU_INSTR,
-	PRI_INSTR
+	PRI_INSTR,
+	LABEL_INSTR
 };
 
 struct instr
@@ -42,6 +43,9 @@ struct instr_manager
 	unsigned int count;
 	struct instr *first;
 	struct instr *last;
+	unsigned int num_label;
+	struct label_stack * stack_label_if;
+	struct label_stack * stack_label_else;
 };
 
 void instr_manager_init();
@@ -53,6 +57,14 @@ void instr_emit_add(int dest, int op1, int op2);
 void instr_emit_sou(int dest, int op1, int op2);
 void instr_emit_mul(int dest, int op1, int op2);
 void instr_emit_div(int dest, int op1, int op2);
+void instr_emit_equ(int dest, int op1, int op2);
+void instr_emit_inf(int dest, int op1, int op2);
+void instr_emit_sup(int dest, int op1, int op2);
+void instr_emit_jmf(int addr);
 void instr_emit_pri(int what);
+void instr_emit_end_if();
+void instr_emit_end_else();
+void instr_emit_jmp();
+void instr_emit_jmf();
 
 #endif

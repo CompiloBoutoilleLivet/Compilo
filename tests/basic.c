@@ -1,15 +1,18 @@
 
 int main()
 {
-	int a;
-	int b;
+	int a=2, b;
+	int c;
 
-	if() {
-		a = 6;
-		if(){
-			a = 4;
+	if(a == 2) {
+		printf(a);
+		if(a == 2) {
+			printf(a);
+		} 
+		else {
+			printf(a);
 		}
 	} else {
-		printf(a);
+		printf(b);
 	}
 }

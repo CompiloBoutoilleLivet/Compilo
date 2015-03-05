@@ -28,6 +28,7 @@ int yyerror (char *s);
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
 %token tIF tELSE
+%token tEQUAL_BOOLEAN tDIFFERENT tSMALLER tGREATER
 %token <number> tNUMBER
 %token <name> tID
 
@@ -40,6 +41,7 @@ int yyerror (char *s);
 %type <symtab_off> Affectation
 %type <symtab_off> AffectationDec
 %type <symtab_off> Variable
+%type <symtab_off> Condition
 
 %%
 
@@ -140,15 +142,53 @@ Affectation : tEQUAL ExprArith
               }
             ;
 
-If : tIF tPARENT_OPEN Conditions tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
+            {
+                instr_emit_jmp();
+                instr_emit_end_if();
+            }
 Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
+            {
+                instr_emit_end_else();
+            }
 
 IfElse : If
+            {
+                instr_emit_end_else();
+            }
        | If Else
        ;
 
-Conditions : /* empty */ /* TODO */
-           ;
+Condition : ExprArith tEQUAL_BOOLEAN ExprArith
+            {
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+                
+                $$ = symtab_add_symbol_temp(symbol_table);
+                symtab_pop(symbol_table);
+
+                instr_emit_equ($$, $1, $3);
+                instr_emit_jmf($$);
+            }
+            | ExprArith tDIFFERENT ExprArith
+            {
+              
+            }
+            | ExprArith tSMALLER ExprArith 
+            {
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_table);
+                instr_emit_inf($$, $1, $3);
+            }
+            | ExprArith tGREATER ExprArith 
+            {
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_table);
+                instr_emit_sup($$, $1, $3);
+            } ;
+
 
 Operations : /* empty */
            | Operations AffectationOp tSEMICOLON
