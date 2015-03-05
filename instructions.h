@@ -84,7 +84,7 @@ void instr_emit_jmf(int addr);
 void instr_emit_pri(int what);
 void instr_emit_end_if();
 void instr_emit_end_else();
-void instr_emit_jmp();
-void instr_emit_jmf();
+void instr_emit_else();
+void instr_emit_if();
 
 #endif

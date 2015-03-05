@@ -293,3 +293,22 @@ void instr_emit_end_else(){
 	}
 }
 
+void instr_emit_while()
+{
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(LABEL_INSTR, 1)) != NULL)
+	{
+		instr->params[0] = label_pop(instr_manager->stack_label_while);
+		instr_emit_instr(instr);
+	}
+}
+
+void instr_emit_end_while(){
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(JMP_INSTR, 1)) != NULL)
+	{
+		instr->params[0] = label_push(instr_manager->stack_label_while);
+		instr_emit_instr(instr);
+		instr_emit_end_if();
+	}
+}
