@@ -1,18 +1,11 @@
 
 int main()
 {
-	int a=2, b;
-	int c;
-
-	if(a == 2) {
+	int a = 0;
+	while(a < 3 )
+	{
 		printf(a);
-		if(a == 2) {
-			printf(a);
-		} 
-		else {
-			printf(a);
-		}
-	} else {
-		printf(b);
+		a = a+1;
 	}
+
 }

@@ -15,6 +15,26 @@ Ca pourrait aussi faciliter les jump conditionels ou non
 Je ne sais pas si y'a vraiment un intérêt mais c'est cool
 */
 
+/*
+LABEL_COND:
+	condition
+	blabla boucle
+
+LABEL_FIN:
+
+while(a==1){
+	print(a);
+}
+
+LABEL_COND:
+	a == 1 ?
+	JMF LABEL_NON
+	OUI
+	JMP LABEL_COND
+LABEL_NON:
+
+*/
+
 enum instr_type {
 	ADD_INSTR,
 	MUL_INSTR,

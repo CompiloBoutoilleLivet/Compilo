@@ -27,7 +27,7 @@ int yyerror (char *s);
 %token tPLUS tMINUS tMULT tDIV tEQUAL
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
-%token tIF tELSE
+%token tIF tELSE tWHILE
 %token tEQUAL_BOOLEAN tDIFFERENT tSMALLER tGREATER
 %token <number> tNUMBER
 %token <name> tID
@@ -189,11 +189,14 @@ Condition : ExprArith tEQUAL_BOOLEAN ExprArith
                 instr_emit_sup($$, $1, $3);
             } ;
 
+WhileLoop : tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+          ;
 
 Operations : /* empty */
            | Operations AffectationOp tSEMICOLON
            | Operations Printf tSEMICOLON
            | Operations IfElse
+           | Operations WhileLoop
            ;
 
 ExprArith : tID
