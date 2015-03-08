@@ -66,6 +66,7 @@ struct instr_manager
 	unsigned int num_label;
 	struct label_stack * stack_label_if;
 	struct label_stack * stack_label_else;
+	struct label_stack * stack_label_while;
 };
 
 void instr_manager_init();
@@ -80,11 +81,11 @@ void instr_emit_div(int dest, int op1, int op2);
 void instr_emit_equ(int dest, int op1, int op2);
 void instr_emit_inf(int dest, int op1, int op2);
 void instr_emit_sup(int dest, int op1, int op2);
-void instr_emit_jmf(int addr);
 void instr_emit_pri(int what);
+
+void instr_emit_if(int addr);
 void instr_emit_end_if();
-void instr_emit_end_else();
 void instr_emit_else();
-void instr_emit_if();
+void instr_emit_end_else();
 
 #endif

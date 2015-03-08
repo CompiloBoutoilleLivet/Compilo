@@ -15,6 +15,7 @@ void instr_manager_init()
 		instr_manager->last = NULL;
 	 	instr_manager->stack_label_if = label_stack_init();
 		instr_manager->stack_label_else = label_stack_init();
+		instr_manager->stack_label_while = label_stack_init();
 	}
 }
 
@@ -56,21 +57,21 @@ void instr_manager_print_textual_file(FILE *f)
 
 				case DIV_INSTR:
 					fprintf(f, "\tdiv [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 				case EQU_INSTR:
 					fprintf(f, "\tequ [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 
 				case INF_INSTR:
 					fprintf(f, "\tinf [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 
 				case SUP_INSTR:
 					fprintf(f, "\tsup [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 
 				case PRI_INSTR:
@@ -80,17 +81,17 @@ void instr_manager_print_textual_file(FILE *f)
 
 				case JMP_INSTR:
 					fprintf(f, "\tjmp label%d\n", instr->params[0]);
-					break;	
+					break;
 
 
 				case JMF_INSTR:
 					fprintf(f, "\tjmf [$%d], label%d\n", instr->params[0], instr->params[1]);
-					break;	
+					break;
 
 
 				case LABEL_INSTR:
 					fprintf(f, "label%d:\n", instr->params[0]);
-					break;	
+					break;
 
 
 				default:
@@ -255,42 +256,49 @@ void instr_emit_inf(int dest, int op1, int op2)
 	}
 }
 
-void instr_emit_jmf(int addr)
+void instr_emit_jmf(int addr, struct label_stack * stack)
 {
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(JMF_INSTR, 2)) != NULL)
 	{
 		instr->params[0] = addr;
-		instr->params[1] = label_push(instr_manager->stack_label_if);
+		instr->params[1] = label_push(stack);
 		instr_emit_instr(instr);
 	}
 }
 
-void instr_emit_jmp(){
+void instr_emit_jmp(struct label_stack * stack){
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(JMP_INSTR, 1)) != NULL)
 	{
-		instr->params[0] = label_push(instr_manager->stack_label_else);
+		instr->params[0] = label_push(stack);
 		instr_emit_instr(instr);
 	}
+}
+
+void instr_emit_label(struct label_stack * stack){
+	struct instr *instr = NULL;
+	if((instr = instr_init_instr(LABEL_INSTR, 1)) != NULL)
+	{
+		instr->params[0] = label_pop(stack);
+		instr_emit_instr(instr);
+	}
+}
+
+void instr_emit_if(int addr){
+	instr_emit_jmf(addr, instr_manager->stack_label_if);
+}
+
+void instr_emit_else(){
+	instr_emit_label(instr_manager->stack_label_if);
 }
 
 void instr_emit_end_if(){
-	struct instr *instr = NULL;
-	if((instr = instr_init_instr(LABEL_INSTR, 1)) != NULL)
-	{
-		instr->params[0] = label_pop(instr_manager->stack_label_if);
-		instr_emit_instr(instr);
-	}
+	instr_emit_jmp(instr_manager->stack_label_else);
 }
 
 void instr_emit_end_else(){
-	struct instr *instr = NULL;
-	if((instr = instr_init_instr(LABEL_INSTR, 1)) != NULL)
-	{
-		instr->params[0] = label_pop(instr_manager->stack_label_else);
-		instr_emit_instr(instr);
-	}
+	instr_emit_label(instr_manager->stack_label_else);
 }
 
 void instr_emit_while()

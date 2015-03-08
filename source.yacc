@@ -142,10 +142,10 @@ Affectation : tEQUAL ExprArith
               }
             ;
 
-If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
+If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
-                instr_emit_jmp();
                 instr_emit_end_if();
+                instr_emit_else();
             }
 Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
@@ -164,25 +164,25 @@ Condition : ExprArith tEQUAL_BOOLEAN ExprArith
             {
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
-                
+
                 $$ = symtab_add_symbol_temp(symbol_table);
                 symtab_pop(symbol_table);
 
                 instr_emit_equ($$, $1, $3);
-                instr_emit_jmf($$);
+                instr_emit_if($$);
             }
             | ExprArith tDIFFERENT ExprArith
             {
-              
+
             }
-            | ExprArith tSMALLER ExprArith 
+            | ExprArith tSMALLER ExprArith
             {
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
                 $$ = symtab_add_symbol_temp(symbol_table);
                 instr_emit_inf($$, $1, $3);
             }
-            | ExprArith tGREATER ExprArith 
+            | ExprArith tGREATER ExprArith
             {
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
@@ -190,7 +190,7 @@ Condition : ExprArith tEQUAL_BOOLEAN ExprArith
                 instr_emit_sup($$, $1, $3);
             } ;
 
-WhileLoop : tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
+WhileLoop : tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
                 instr_emit_end_while();
             }
