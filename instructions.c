@@ -256,49 +256,55 @@ void instr_emit_inf(int dest, int op1, int op2)
 	}
 }
 
-void instr_emit_jmf(int addr, struct label_stack * stack)
+void instr_emit_jmf(int addr, int label)
 {
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(JMF_INSTR, 2)) != NULL)
 	{
 		instr->params[0] = addr;
-		instr->params[1] = label_push(stack);
+		instr->params[1] = label;
 		instr_emit_instr(instr);
 	}
 }
 
-void instr_emit_jmp(struct label_stack * stack){
+void instr_emit_jmp(int label)
+{
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(JMP_INSTR, 1)) != NULL)
 	{
-		instr->params[0] = label_push(stack);
+		instr->params[0] = label;
 		instr_emit_instr(instr);
 	}
 }
 
-void instr_emit_label(struct label_stack * stack){
+void instr_emit_label(int label)
+{
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(LABEL_INSTR, 1)) != NULL)
 	{
-		instr->params[0] = label_pop(stack);
+		instr->params[0] = label;
 		instr_emit_instr(instr);
 	}
 }
 
-void instr_emit_if(int addr){
-	instr_emit_jmf(addr, instr_manager->stack_label_if);
+void instr_emit_if(int addr)
+{
+	instr_emit_jmf(addr, label_push(instr_manager->stack_label_if));
 }
 
-void instr_emit_else(){
-	instr_emit_label(instr_manager->stack_label_if);
+void instr_emit_else()
+{
+	instr_emit_label(label_pop(instr_manager->stack_label_if));
 }
 
-void instr_emit_end_if(){
-	instr_emit_jmp(instr_manager->stack_label_else);
+void instr_emit_end_if()
+{
+	instr_emit_jmp(label_push(instr_manager->stack_label_else));
 }
 
-void instr_emit_end_else(){
-	instr_emit_label(instr_manager->stack_label_else);
+void instr_emit_end_else()
+{
+	instr_emit_label(label_pop(instr_manager->stack_label_else));
 }
 
 void instr_emit_while()

@@ -2,10 +2,12 @@
 int main()
 {
 	int a = 0;
-	while(a < 3 )
+
+	if(a==1)
 	{
-		printf(a);
-		a = a+1;
+		a = 3;
+	} else {
+		a = 2;
 	}
 
 }
