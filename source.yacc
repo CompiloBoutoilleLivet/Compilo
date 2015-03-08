@@ -155,6 +155,8 @@ Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
 
 IfElse : If
             {
+                // we need this line because the IF always suppose that
+                // we have an ELSE after. We do not do any optimisation ;)
                 instr_emit_label(label_pop(instr_manager->stack_label_else));
             }
        | If Else
