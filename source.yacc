@@ -4,6 +4,7 @@
 #include "lex.yy.h"
 #include "symtab.h"
 #include "instructions.h"
+#include "label.h"
 
 extern int line;
 extern struct symtab *symbol_table;
@@ -21,6 +22,7 @@ int yyerror (char *s);
         /* specific to rules */
         enum var_type type;
         int symtab_off;
+        int label_id;
 }
 
 %token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
@@ -42,6 +44,8 @@ int yyerror (char *s);
 %type <symtab_off> AffectationDec
 %type <symtab_off> Variable
 %type <symtab_off> Condition
+%type <label_id> BeginWhile
+%type <label_id> ConditionWhile
 
 %%
 
@@ -190,9 +194,29 @@ Condition : ExprArith tEQUAL_BOOLEAN ExprArith
                 instr_emit_sup($$, $1, $3);
             } ;
 
-WhileLoop : tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+ConditionWhile : ExprArith tSMALLER ExprArith
+                {
+                    symtab_pop(symbol_table);
+                    symtab_pop(symbol_table);
+                    int test = symtab_add_symbol_temp(symbol_table);
+                    instr_emit_inf(test, $1, $3);
+                    $$ = label_get_next_label() * -1;
+                    instr_emit_jmf(test, $$);
+                }
+               ;
+
+BeginWhile : /* empty */
+    {
+        // sert uniquement à mettre le label au tout début
+        $$ = label_push(instr_manager->stack_label_while);
+        instr_emit_label($$);
+    }
+    ;
+
+WhileLoop : BeginWhile tWHILE tPARENT_OPEN ConditionWhile tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
-                instr_emit_end_while();
+                instr_emit_jmp($1);
+                instr_emit_label($4);
             }
           ;
 

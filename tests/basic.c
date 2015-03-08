@@ -3,11 +3,8 @@ int main()
 {
 	int a = 0;
 
-	if(a==1)
+	while(a < 10)
 	{
-		a = 3;
-	} else {
-		a = 2;
+		a = a+1;
 	}
-
 }

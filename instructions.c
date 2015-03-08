@@ -315,6 +315,9 @@ void instr_emit_while()
 		instr->params[0] = label_pop(instr_manager->stack_label_while);
 		instr_emit_instr(instr);
 	}
+
+	
+
 }
 
 void instr_emit_end_while(){

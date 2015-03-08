@@ -82,6 +82,9 @@ void instr_emit_equ(int dest, int op1, int op2);
 void instr_emit_inf(int dest, int op1, int op2);
 void instr_emit_sup(int dest, int op1, int op2);
 void instr_emit_pri(int what);
+void instr_emit_jmf(int addr, int label);
+void instr_emit_jmp(int label);
+void instr_emit_label(int label);
 
 void instr_emit_if(int addr);
 void instr_emit_end_if();
