@@ -1,11 +1,9 @@
-
 int main()
 {
-	int a = 0;
-	while(a < 3 )
-	{
-		printf(a);
-		a = a+1;
+	int a = 0, b;
+	if(a+1337 == 42/20){
+		b = 2;
+	} else {
+		b = 0;
 	}
-
 }

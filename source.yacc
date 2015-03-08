@@ -4,6 +4,7 @@
 #include "lex.yy.h"
 #include "symtab.h"
 #include "instructions.h"
+#include "label.h"
 
 extern int line;
 extern struct symtab *symbol_table;
@@ -144,17 +145,17 @@ Affectation : tEQUAL ExprArith
 
 If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
             {
-                instr_emit_jmp();
-                instr_emit_end_if();
+                instr_emit_jmp(label_push(instr_manager->stack_label_else));
+                instr_emit_label(label_pop(instr_manager->stack_label_if));
             }
 Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
-                instr_emit_end_else();
+                instr_emit_label(label_pop(instr_manager->stack_label_else));
             }
 
 IfElse : If
             {
-                instr_emit_end_else();
+                instr_emit_label(label_pop(instr_manager->stack_label_else));
             }
        | If Else
        ;
@@ -168,7 +169,7 @@ Condition : ExprArith tEQUAL_BOOLEAN ExprArith
                 symtab_pop(symbol_table);
 
                 instr_emit_equ($$, $1, $3);
-                instr_emit_jmf($$);
+                instr_emit_jmf($$, label_push(instr_manager->stack_label_if));
             }
             | ExprArith tDIFFERENT ExprArith
             {
