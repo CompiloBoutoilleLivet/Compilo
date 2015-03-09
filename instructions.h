@@ -76,6 +76,7 @@ void instr_emit_sou(int dest, int op1, int op2);
 void instr_emit_mul(int dest, int op1, int op2);
 void instr_emit_div(int dest, int op1, int op2);
 void instr_emit_equ(int dest, int op1, int op2);
+void instr_emit_diff(int dest, int op1, int op2);
 void instr_emit_inf(int dest, int op1, int op2);
 void instr_emit_sup(int dest, int op1, int op2);
 void instr_emit_pri(int what);

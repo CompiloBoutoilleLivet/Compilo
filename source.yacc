@@ -178,9 +178,13 @@ ComparaisonOperator : tEQUAL_BOOLEAN
             | tGREATER
             {
                 $$ = instr_emit_sup;
-            } 
+            }
+            | tDIFFERENT
+            {
+                $$ = instr_emit_diff;
+            }
+            ;
 
-// TODO: Différencier les conditions pour le while et le if
 Condition : ExprArith ComparaisonOperator ExprArith
             {
                 int tmp;
