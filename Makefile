@@ -7,7 +7,7 @@ CC = gcc
 CFLAGS = -Wall
 LDFLAGS = -lfl -ly
 
-SRC = $(wildcard *.c) lex.yy.c y.tab.c
+SRC = $(wildcard *.c) $(wildcard instructionmanager/*.c) lex.yy.c y.tab.c
 OBJ = $(SRC:.c=.o)
 AOUT = bin/compilo
 

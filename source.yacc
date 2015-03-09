@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "lex.yy.h"
 #include "symtab.h"
-#include "instructions.h"
+#include "instructionmanager/instructions.h"
 #include "label.h"
 
 extern int line;
