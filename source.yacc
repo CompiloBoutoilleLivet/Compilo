@@ -36,6 +36,7 @@ int yyerror (char *s);
 %token <number> tNUMBER
 %token <name> tID
 
+%right tEQUAL
 %left tPLUS tMINUS
 %left tMULT tDIV
 
@@ -50,7 +51,8 @@ int yyerror (char *s);
 %type <label_id> If
 %type <label_id> IfElse
 %type <comp_operator> ComparaisonOperator
-%type <arith_operator> OperatorArith
+%type <arith_operator> OperatorArithPlusMinus
+%type <arith_operator> OperatorArithMultDiv
 
 %%
 
@@ -243,7 +245,7 @@ Operations : /* empty */
            | Operations WhileLoop
            ;
 
-OperatorArith : tPLUS 
+OperatorArithPlusMinus : tPLUS 
             {
                 $$ = instr_emit_add;
             } 
@@ -251,7 +253,8 @@ OperatorArith : tPLUS
             {
                 $$ = instr_emit_sou;
             } 
-            | tMULT 
+
+OperatorArithMultDiv : tMULT 
             {
                 $$ = instr_emit_mul;
             } 
@@ -282,7 +285,14 @@ ExprArith : tID
                 $$ = symtab_add_symbol_temp(symbol_table);
                 instr_emit_afc($$, $2*-1);
             }
-          | ExprArith OperatorArith ExprArith
+          | ExprArith OperatorArithPlusMinus ExprArith %prec tMINUS
+            {
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_table);
+                ($2)($$, $1, $3);
+            }
+           | ExprArith OperatorArithMultDiv ExprArith %prec tDIV
             {
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
