@@ -13,8 +13,11 @@ void instr_manager_init()
 		instr_manager->count = 0;
 		instr_manager->first = NULL;
 		instr_manager->last = NULL;
+<<<<<<< HEAD
 	 	instr_manager->stack_label_if = label_stack_init();
 		instr_manager->stack_label_else = label_stack_init();
+=======
+>>>>>>> Suppr des fonctions emit_if,emit_end_if,emit_else,emit_endelse ... Suppr de la stack dans label.c
 	}
 }
 
@@ -275,12 +278,12 @@ void instr_emit_jmp(int label){
 	}
 }
 
-void instr_emit_label(int num)
+void instr_emit_label(int label)
 {
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(LABEL_INSTR, 1)) != NULL)
 	{
-		instr->params[0] = num;
+		instr->params[0] = label;
 		instr_emit_instr(instr);
 	}
 }

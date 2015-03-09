@@ -64,10 +64,6 @@ struct instr_manager
 	struct instr *first;
 	struct instr *last;
 	unsigned int num_label;
-	struct label_stack * stack_label_if; // push when entering into a IF
-										 // pop when exiting of a IF
-	struct label_stack * stack_label_else; // push when entering into a ELSE
-											// pop when exiting an ELSE
 };
 
 void instr_manager_init();
@@ -86,4 +82,5 @@ void instr_emit_pri(int what);
 void instr_emit_jmf(int addr, int label);
 void instr_emit_jmp(int label);
 void instr_emit_label(int label);
+
 #endif
