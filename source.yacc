@@ -23,6 +23,7 @@ int yyerror (char *s);
         enum var_type type;
         int symtab_off;
         int label_id;
+        void (* comp_operator) (int,int,int);
 }
 
 %token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
@@ -45,9 +46,9 @@ int yyerror (char *s);
 %type <symtab_off> Variable
 %type <symtab_off> Condition
 %type <label_id> BeginWhile
-%type <label_id> ConditionWhile
 %type <label_id> If
 %type <label_id> IfElse
+%type <comp_operator> ComparaisonOperator
 
 %%
 
@@ -150,21 +151,6 @@ Affectation : tEQUAL ExprArith
 
 If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
             {
-<<<<<<< HEAD
-                instr_emit_jmp(label_push(instr_manager->stack_label_else));
-                instr_emit_label(label_pop(instr_manager->stack_label_if));
-            }
-Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
-            {
-                instr_emit_label(label_pop(instr_manager->stack_label_else));
-            }
-
-IfElse : If
-            {
-                // we need this line because the IF always suppose that
-                // we have an ELSE after. We do not do any optimisation ;)
-                instr_emit_label(label_pop(instr_manager->stack_label_else));
-=======
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmp($$);
                 instr_emit_label($3);
@@ -174,7 +160,6 @@ Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
 IfElse : If
             {
                 instr_emit_label($1);
->>>>>>> Suppr des fonctions emit_if,emit_end_if,emit_else,emit_endelse ... Suppr de la stack dans label.c
             }
        | If Else
             {
@@ -182,61 +167,36 @@ IfElse : If
             }
        ;
 
+ComparaisonOperator : tEQUAL_BOOLEAN 
+            {
+                $$ = instr_emit_equ;
+            } 
+            | tSMALLER
+            {
+                $$ = instr_emit_inf;
+            } 
+            | tGREATER
+            {
+                $$ = instr_emit_sup;
+            } 
+
 // TODO: Différencier les conditions pour le while et le if
-Condition : ExprArith tEQUAL_BOOLEAN ExprArith
+Condition : ExprArith ComparaisonOperator ExprArith
             {
                 int tmp;
 
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
-<<<<<<< HEAD
-                
-                $$ = symtab_add_symbol_temp(symbol_table);
-                symtab_pop(symbol_table);
-
-                instr_emit_equ($$, $1, $3);
-                instr_emit_jmf($$, label_push(instr_manager->stack_label_if));
-=======
 
                 tmp = symtab_add_symbol_temp(symbol_table);
                 symtab_pop(symbol_table);
 
-                instr_emit_equ(tmp, $1, $3);
+                ($2)(tmp, $1, $3);
                 
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmf(tmp,$$);
 
->>>>>>> Suppr des fonctions emit_if,emit_end_if,emit_else,emit_endelse ... Suppr de la stack dans label.c
-            }
-            | ExprArith tDIFFERENT ExprArith
-            {
-              
-            }
-            | ExprArith tSMALLER ExprArith 
-            {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
-                instr_emit_inf($$, $1, $3);
-            }
-            | ExprArith tGREATER ExprArith 
-            {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
-                instr_emit_sup($$, $1, $3);
-            } ;
-
-ConditionWhile : ExprArith tSMALLER ExprArith
-                {
-                    symtab_pop(symbol_table);
-                    symtab_pop(symbol_table);
-                    int test = symtab_add_symbol_temp(symbol_table);
-                    instr_emit_inf(test, $1, $3);
-                    $$ = label_get_next_tmp_label();
-                    instr_emit_jmf(test, $$);
-                }
-               ;
+            };
 
 BeginWhile : /* empty */
     {
@@ -246,7 +206,7 @@ BeginWhile : /* empty */
     }
     ;
 
-WhileLoop : BeginWhile tWHILE tPARENT_OPEN ConditionWhile tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+WhileLoop : BeginWhile tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
                 instr_emit_jmp($1);
                 instr_emit_label($4);

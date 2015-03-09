@@ -2,7 +2,8 @@
 #define LABEL_H
 
 /*
-Gère les labels ...
+Chargé de gérer les numéros de label
+Au final c'est juste une variable qui est incrémenté
 */
 
 int label_get_next_label();
