@@ -271,6 +271,7 @@ void instr_emit_diff(int dest, int op1, int op2)
 	instr_emit_equ(dest, op1, op2);
 	tmp = symtab_add_symbol_temp(symbol_table);
 	symtab_pop(symbol_table);
+	instr_emit_afc(tmp, 1);
 	instr_emit_sou(dest, dest, tmp);
 
 }

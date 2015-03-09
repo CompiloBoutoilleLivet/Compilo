@@ -24,6 +24,7 @@ int yyerror (char *s);
         int symtab_off;
         int label_id;
         void (* comp_operator) (int,int,int);
+        void (* arith_operator) (int,int,int);
 }
 
 %token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
@@ -49,6 +50,7 @@ int yyerror (char *s);
 %type <label_id> If
 %type <label_id> IfElse
 %type <comp_operator> ComparaisonOperator
+%type <arith_operator> OperatorArith
 
 %%
 
@@ -193,9 +195,8 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 symtab_pop(symbol_table);
 
                 tmp = symtab_add_symbol_temp(symbol_table);
-                symtab_pop(symbol_table);
-
                 ($2)(tmp, $1, $3);
+                symtab_pop(symbol_table);
                 
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmf(tmp,$$);
@@ -224,6 +225,24 @@ Operations : /* empty */
            | Operations WhileLoop
            ;
 
+OperatorArith : tPLUS 
+            {
+                $$ = instr_emit_add;
+            } 
+            | tMINUS
+            {
+                $$ = instr_emit_sou;
+            } 
+            | tMULT 
+            {
+                $$ = instr_emit_mul;
+            } 
+            | tDIV 
+            {
+                $$ = instr_emit_div;
+            }
+            ;
+
 ExprArith : tID
             {
                   if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
@@ -245,33 +264,12 @@ ExprArith : tID
                 $$ = symtab_add_symbol_temp(symbol_table);
                 instr_emit_afc($$, $2*-1);
             }
-          | ExprArith tPLUS ExprArith
+          | ExprArith OperatorArith ExprArith
             {
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
                 $$ = symtab_add_symbol_temp(symbol_table);
-                instr_emit_add($$, $1, $3);
-            }
-          | ExprArith tMINUS ExprArith
-            {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
-                instr_emit_sou($$, $1, $3);
-            }
-          | ExprArith tMULT ExprArith
-            {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
-                instr_emit_mul($$, $1, $3);
-            }
-          | ExprArith tDIV ExprArith
-            {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
-                instr_emit_div($$, $1, $3);
+                ($2)($$, $1, $3);
             }
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
             {
