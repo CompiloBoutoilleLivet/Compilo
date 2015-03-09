@@ -54,21 +54,21 @@ void instr_manager_print_textual_file(FILE *f)
 
 				case DIV_INSTR:
 					fprintf(f, "\tdiv [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 				case EQU_INSTR:
 					fprintf(f, "\tequ [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 
 				case INF_INSTR:
 					fprintf(f, "\tinf [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 
 				case SUP_INSTR:
 					fprintf(f, "\tsup [$%d], [$%d], [$%d]\n", instr->params[0], instr->params[1], instr->params[2]);
-					break;	
+					break;
 
 
 				case PRI_INSTR:
@@ -78,17 +78,17 @@ void instr_manager_print_textual_file(FILE *f)
 
 				case JMP_INSTR:
 					fprintf(f, "\tjmp label%d\n", instr->params[0]);
-					break;	
+					break;
 
 
 				case JMF_INSTR:
 					fprintf(f, "\tjmf [$%d], label%d\n", instr->params[0], instr->params[1]);
-					break;	
+					break;
 
 
 				case LABEL_INSTR:
 					fprintf(f, "label%d:\n", instr->params[0]);
-					break;	
+					break;
 
 
 				default:
@@ -253,18 +253,21 @@ void instr_emit_inf(int dest, int op1, int op2)
 	}
 }
 
-void instr_emit_jmf(int addr_test, int label)
+
+void instr_emit_jmf(int addr, int label)
 {
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(JMF_INSTR, 2)) != NULL)
 	{
-		instr->params[0] = addr_test;
+		instr->params[0] = addr;
 		instr->params[1] = label;
 		instr_emit_instr(instr);
 	}
 }
 
-void instr_emit_jmp(int label){
+
+void instr_emit_jmp(int label)
+{
 	struct instr *instr = NULL;
 	if((instr = instr_init_instr(JMP_INSTR, 1)) != NULL)
 	{

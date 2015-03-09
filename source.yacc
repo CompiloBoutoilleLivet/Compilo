@@ -149,7 +149,7 @@ Affectation : tEQUAL ExprArith
               }
             ;
 
-If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
+If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmp($$);
