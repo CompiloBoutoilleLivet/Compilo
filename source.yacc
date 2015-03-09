@@ -46,6 +46,8 @@ int yyerror (char *s);
 %type <symtab_off> Condition
 %type <label_id> BeginWhile
 %type <label_id> ConditionWhile
+%type <label_id> If
+%type <label_id> IfElse
 
 %%
 
@@ -148,32 +150,38 @@ Affectation : tEQUAL ExprArith
 
 If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
             {
-                instr_emit_end_if();
-                instr_emit_else();
+                $$ = label_get_next_tmp_label();
+                instr_emit_jmp($$);
+                instr_emit_label($3);
             }
 Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
-            {
-                instr_emit_end_else();
-            }
 
 IfElse : If
             {
-                instr_emit_end_else();
+                instr_emit_label($1);
             }
        | If Else
+            {
+                instr_emit_label($1);
+            }
        ;
 
 // TODO: Différencier les conditions pour le while et le if
 Condition : ExprArith tEQUAL_BOOLEAN ExprArith
             {
+                int tmp;
+
                 symtab_pop(symbol_table);
                 symtab_pop(symbol_table);
 
-                $$ = symtab_add_symbol_temp(symbol_table);
+                tmp = symtab_add_symbol_temp(symbol_table);
                 symtab_pop(symbol_table);
 
-                instr_emit_equ($$, $1, $3);
-                instr_emit_if($$);
+                instr_emit_equ(tmp, $1, $3);
+                
+                $$ = label_get_next_tmp_label();
+                instr_emit_jmf(tmp,$$);
+
             }
             | ExprArith tDIFFERENT ExprArith
             {
@@ -200,7 +208,7 @@ ConditionWhile : ExprArith tSMALLER ExprArith
                     symtab_pop(symbol_table);
                     int test = symtab_add_symbol_temp(symbol_table);
                     instr_emit_inf(test, $1, $3);
-                    $$ = label_get_next_label() * -1;
+                    $$ = label_get_next_tmp_label();
                     instr_emit_jmf(test, $$);
                 }
                ;
@@ -208,7 +216,7 @@ ConditionWhile : ExprArith tSMALLER ExprArith
 BeginWhile : /* empty */
     {
         // sert uniquement à mettre le label au tout début
-        $$ = label_push(instr_manager->stack_label_while);
+        $$ = label_get_next_tmp_label();
         instr_emit_label($$);
     }
     ;
