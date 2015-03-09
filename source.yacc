@@ -162,6 +162,7 @@ IfElse : If
        | If Else
        ;
 
+// TODO: Différencier les conditions pour le while et le if
 Condition : ExprArith tEQUAL_BOOLEAN ExprArith
             {
                 symtab_pop(symbol_table);
@@ -192,7 +193,10 @@ Condition : ExprArith tEQUAL_BOOLEAN ExprArith
                 instr_emit_sup($$, $1, $3);
             } ;
 
-WhileLoop : tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+WhileLoop : tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE 
+            {
+                instr_emit_end_while();
+            }
           ;
 
 Operations : /* empty */
