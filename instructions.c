@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "label.h"
 #include "instructions.h"
-#include "symtab.h"
 
-extern struct symtab *symbol_table;
 struct instr_manager *instr_manager = NULL;
 
 void instr_manager_init()
