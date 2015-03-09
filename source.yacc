@@ -181,10 +181,6 @@ ComparaisonOperator : tEQUAL_BOOLEAN
             {
                 $$ = instr_emit_sup;
             }
-            | tDIFFERENT
-            {
-                $$ = instr_emit_diff;
-            }
             ;
 
 Condition : ExprArith ComparaisonOperator ExprArith
@@ -195,13 +191,35 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 symtab_pop(symbol_table);
 
                 tmp = symtab_add_symbol_temp(symbol_table);
-                ($2)(tmp, $1, $3);
                 symtab_pop(symbol_table);
+                ($2)(tmp, $1, $3);
                 
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmf(tmp,$$);
 
-            };
+            }
+            | ExprArith tDIFFERENT ExprArith
+            {
+                int tmp_const = 0;
+                int tmp_res = 0;
+
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+
+                tmp_res = symtab_add_symbol_temp(symbol_table);
+                instr_emit_equ(tmp_res, $1, $3);
+
+                tmp_const = symtab_add_symbol_temp(symbol_table);
+                instr_emit_afc(tmp_const, 1);
+
+                instr_emit_sou(tmp_res, tmp_res, tmp_const);
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+
+                $$ = label_get_next_tmp_label();
+                instr_emit_jmf(tmp_res, $$);
+            }
+            ;
 
 BeginWhile : /* empty */
     {

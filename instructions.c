@@ -255,27 +255,6 @@ void instr_emit_inf(int dest, int op1, int op2)
 	}
 }
 
-void instr_emit_diff(int dest, int op1, int op2)
-{
-	/*
-		On fait un EQU entre op1 et op2, on 
-		garde le résultat dans dest.
-		On doit inverser le résultat de dest, pour cela
-		on fait 1 - dest
-		Si dest == 1:
-			1 - dest = 0
-		sinon
-			1 - dest = 1
-	*/
-	int tmp = 0;
-	instr_emit_equ(dest, op1, op2);
-	tmp = symtab_add_symbol_temp(symbol_table);
-	symtab_pop(symbol_table);
-	instr_emit_afc(tmp, 1);
-	instr_emit_sou(dest, dest, tmp);
-
-}
-
 void instr_emit_jmf(int addr, int label)
 {
 	struct instr *instr = NULL;
