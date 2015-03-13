@@ -1,5 +1,17 @@
 int main()
 {
-	int a = 0, b;
-	a = 1+2*3*4;
+	int i;
+	int b = 1337;
+
+	while(i < 10)
+	{
+		if(i == 5)
+		{
+			printf(b);
+		} else {
+			printf(i);
+		}
+		i = i + 1;
+	}
+
 }
