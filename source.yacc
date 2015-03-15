@@ -4,7 +4,7 @@
 #include "lex.yy.h"
 #include "symtab.h"
 #include "instructionmanager/instructions.h"
-#include "label.h"
+#include "instructionmanager/label.h"
 
 extern int line;
 extern struct symtab *symbol_table;
@@ -46,7 +46,7 @@ int yyerror (char *s);
 %type <symtab_off> Affectation
 %type <symtab_off> AffectationDec
 %type <symtab_off> Variable
-%type <symtab_off> Condition
+%type <label_id> Condition
 %type <label_id> BeginWhile
 %type <label_id> If
 %type <label_id> IfElse
