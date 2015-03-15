@@ -1,15 +1,15 @@
 int main()
 {
-	int i;
+	int i = 0;
 	int b = 1337;
 
 	while(i < 10)
 	{
-		if(i == 5)
+		if(i < 5)
 		{
-			printf(b);
-		} else {
 			printf(i);
+		} else {
+			printf(b);
 		}
 		i = i + 1;
 	}
