@@ -153,13 +153,13 @@ Affectation : tEQUAL ExprArith
               }
             ;
 
-If : tIF tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+If : tIF tPARENT_OPEN Condition tPARENT_CLOSE BlocOp
             {
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmp($$);
                 instr_emit_label($3);
             }
-Else : tELSE tBRAC_OPEN Operations tBRAC_CLOSE
+Else : tELSE BlocOp
 
 IfElse : If
             {
@@ -171,14 +171,14 @@ IfElse : If
             }
        ;
 
-ComparaisonOperator : tEQUAL_BOOLEAN 
+ComparaisonOperator : tEQUAL_BOOLEAN
             {
                 $$ = instr_emit_equ;
-            } 
+            }
             | tSMALLER
             {
                 $$ = instr_emit_inf;
-            } 
+            }
             | tGREATER
             {
                 $$ = instr_emit_sup;
@@ -195,7 +195,7 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 tmp = symtab_add_symbol_temp(symbol_table);
                 symtab_pop(symbol_table);
                 ($2)(tmp, $1, $3);
-                
+
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmf(tmp,$$);
 
@@ -231,7 +231,7 @@ BeginWhile : /* empty */
     }
     ;
 
-WhileLoop : BeginWhile tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Operations tBRAC_CLOSE
+WhileLoop : BeginWhile tWHILE tPARENT_OPEN Condition tPARENT_CLOSE BlocOp
             {
                 instr_emit_jmp($1);
                 instr_emit_label($4);
@@ -239,26 +239,33 @@ WhileLoop : BeginWhile tWHILE tPARENT_OPEN Condition tPARENT_CLOSE tBRAC_OPEN Op
           ;
 
 Operations : /* empty */
-           | Operations AffectationOp tSEMICOLON
-           | Operations Printf tSEMICOLON
-           | Operations IfElse
-           | Operations WhileLoop
+           | Operations Operation
            ;
 
-OperatorArithPlusMinus : tPLUS 
+Operation : AffectationOp tSEMICOLON
+          | Printf tSEMICOLON
+          | IfElse
+          | WhileLoop
+          ;
+
+BlocOp : tBRAC_OPEN Operations tBRAC_CLOSE
+       | Operation
+       ;
+
+OperatorArithPlusMinus : tPLUS
             {
                 $$ = instr_emit_add;
-            } 
+            }
             | tMINUS
             {
                 $$ = instr_emit_sou;
-            } 
+            }
 
-OperatorArithMultDiv : tMULT 
+OperatorArithMultDiv : tMULT
             {
                 $$ = instr_emit_mul;
-            } 
-            | tDIV 
+            }
+            | tDIV
             {
                 $$ = instr_emit_div;
             }
