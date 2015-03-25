@@ -361,18 +361,20 @@ void print_usage(char *s)
     printf("\t -f <filename>\t filename to parse\n");
     printf("\t\t\t if -f is not specified, stdin is parsed\n");
     printf("\t -S <filename>\t filename to write assembly\n");
+    printf("\t -c \t\t enable color\n");
 }
 
 int main(int argc, char **argv) {
     int dflag = 0;
     int sflag = 0;
+    int colorflag = 0;
     char *filename_in = NULL;
     char *filemane_out_asm = NULL;
     FILE *fin = NULL;
     FILE *fout_asm = NULL;
     int c = 0;
 
-    while((c = getopt(argc, argv, "hd::s::f:S:")) != -1)
+    while((c = getopt(argc, argv, "hc::d::s::f:S:")) != -1)
     {
         switch(c)
         {
@@ -387,6 +389,10 @@ int main(int argc, char **argv) {
 
             case 's': // symbol debug
                 sflag = 1;
+                break;
+
+            case 'c':
+                colorflag = 1;
                 break;
 
             case 'f': // stdin
@@ -446,10 +452,10 @@ int main(int argc, char **argv) {
     printf("[+] %d instructions generated\n", instr_manager->count);
     if(fout_asm == NULL)
     {
-        instr_manager_print_textual();
+        instr_manager_print_textual(colorflag);
     } else {
         printf("[+] Writing asm to %s\n", filemane_out_asm);
-        instr_manager_print_textual_file(fout_asm);
+        instr_manager_print_textual_file(fout_asm, colorflag);
     }
 
 	return EXIT_SUCCESS;
