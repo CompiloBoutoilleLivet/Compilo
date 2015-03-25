@@ -8,7 +8,7 @@ int line = 1;
 %option nounput
 
 WHITESPACE [ \t]
-ENDLINE [\n]+
+ENDLINE [\n]
 ID [a-zA-Z][a-zA-Z0-9_]*
 NUMBER ([0-9]+\.)?[0-9]+([Ee][+-]?[0-9]+)?
 
