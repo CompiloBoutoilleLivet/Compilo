@@ -8,8 +8,13 @@ int main()
 
 	while(i <= 20)
 	{
+		int b = i + 1;
+		printf(b);
+
 		if(i >= 20)
 		{
+			int b = 0;
+			printf(b);
 			printf(a3);
 			printf(i);
 		} else if(i >= 10)

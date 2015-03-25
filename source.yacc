@@ -59,6 +59,17 @@ int yyerror (char *s);
 Start : Main BasicBloc
       ;
 
+BeginBasicBloc : /* empty */
+               {
+                    symtab_push_block(symbol_table);
+               }
+
+BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
+            {
+                // get out of block, pop all !
+                symtab_pop_block(symbol_table);
+            }
+
 Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
      ;
 
@@ -100,7 +111,7 @@ Variables : Variable
 Variable : tID
            {
                 int s = -1;
-                if((s = symtab_add_if_not_exists(symbol_table, $1)) == FALSE)
+                if((s = symtab_add_if_not_exists_in_block(symbol_table, $1)) == FALSE)
                 {
                         yyerror("variable already exists");
                 } else {
@@ -117,7 +128,7 @@ AffectationDec : tID Affectation /* declaration */
 		 {
                         int new = -1;
                         int v = symtab_pop(symbol_table);
-                        if((new = symtab_add_if_not_exists(symbol_table, $1)) == FALSE)
+                        if((new = symtab_add_if_not_exists_in_block(symbol_table, $1)) == FALSE)
                         {
                                 yyerror("variable already exists");
                         } else {
@@ -129,12 +140,13 @@ AffectationDec : tID Affectation /* declaration */
 
 AffectationOp : tID Affectation /* operation */
 		{
-                	if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
+                  int dest = symtab_get_symbol(symbol_table, $1);
+
+                	if(dest == FALSE)
                 	{
                 	        yyerror("variable not exists");
                 	}
-
-                    int dest = symtab_get_symbol(symbol_table, $1);
+                    
                     struct symbol *s = symbol_table->stack[dest];
                     int v = symtab_pop(symbol_table);
                     if(s->type == TYPE_CONST_INT)
@@ -275,17 +287,6 @@ BlocOp : BasicBloc
        | Operation
        ;
 
-BeginBasicBloc : /* empty */
-               {
-                    symtab_push_block(symbol_table);
-               }
-
-BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
-            {
-                // get out of block, pop all !
-                symtab_pop_block(symbol_table);
-            }
-
 OperatorArithPlusMinus : tPLUS
             {
                 $$ = instr_emit_add;
@@ -307,11 +308,11 @@ OperatorArithMultDiv : tMULT
 
 ExprArith : tID
             {
-                  if(symtab_symbol_not_exists(symbol_table, $1) == TRUE)
+                  int s = symtab_get_symbol(symbol_table, $1);
+                  if(s == FALSE)
                   {
                           yyerror("variable not exists");
                   } else {
-                        int s = symtab_get_symbol(symbol_table, $1);
                         $$ = symtab_add_symbol_temp(symbol_table);
                         instr_emit_cop($$, s);
                   }

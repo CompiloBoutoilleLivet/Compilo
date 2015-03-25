@@ -71,6 +71,18 @@ int symtab_add_if_not_exists(struct symtab *tab, char *name)
 	return ret;
 }
 
+int symtab_add_if_not_exists_in_block(struct symtab *tab, char *name)
+{
+	int ret = FALSE;
+
+	if(symtab_symbol_exists_in_block(tab, name) == FALSE)
+	{
+		ret = symtab_add_symbol_notype(tab, name);
+	}
+
+	return ret;
+}
+
 /*
 Returns - TRUE if the symbol not exists in tab
 		- FALSE if the symbol exists in tab
@@ -91,6 +103,30 @@ int symtab_symbol_exists(struct symtab *tab, char *name)
 
 	for(i=tab->top; i>=0; i--)
 	{
+
+		if(tab->stack[i]->name != NULL && strcmp(tab->stack[i]->name, name) == 0)
+		{
+			ret = TRUE;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+int symtab_symbol_exists_in_block(struct symtab *tab, char *name)
+{
+	int ret = FALSE;
+	int i;
+
+	for(i=tab->top; i>=0; i--)
+	{
+
+		if(tab->stack[i]->type == TYPE_BLOCK)
+		{
+			break;
+		}
+
 		if(tab->stack[i]->name != NULL && strcmp(tab->stack[i]->name, name) == 0)
 		{
 			ret = TRUE;

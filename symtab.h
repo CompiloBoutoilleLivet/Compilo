@@ -33,8 +33,11 @@ int symtab_add_symbol_temp(struct symtab *tab);
 int symtab_pop(struct symtab *tab);
 int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type);
 void symtab_push_block(struct symtab *tab);
+void symtab_pop_block(struct symtab *tab);
 void symtab_printf(struct symtab *tab);
 char * symtab_text_type(enum var_type type);
+int symtab_add_if_not_exists_in_block(struct symtab *tab, char *name);
+int symtab_symbol_exists_in_block(struct symtab *tab, char *name);
 
 struct simple_table {
 	unsigned int size;
