@@ -56,7 +56,7 @@ int yyerror (char *s);
 
 %%
 
-Start : Main tBRAC_OPEN Declarations Operations tBRAC_CLOSE
+Start : Main BasicBloc
       ;
 
 Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
@@ -271,9 +271,20 @@ Operation : AffectationOp tSEMICOLON
           | WhileLoop
           ;
 
-BlocOp : tBRAC_OPEN Operations tBRAC_CLOSE
+BlocOp : BasicBloc
        | Operation
        ;
+
+BeginBasicBloc : /* empty */
+               {
+                    symtab_push_block(symbol_table);
+               }
+
+BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
+            {
+                // get out of block, pop all !
+                symtab_pop_block(symbol_table);
+            }
 
 OperatorArithPlusMinus : tPLUS
             {

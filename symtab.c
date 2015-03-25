@@ -180,6 +180,8 @@ char * symtab_text_type(enum var_type type){
 					return " TYPE_CONST_INT ";
 				case TYPE_TEMP_VAR:
 					return " TYPE_TEMP_VAR  ";
+				case TYPE_BLOCK:
+					return " TYPE_BLOCK ";
 		}
 }
 
@@ -228,3 +230,25 @@ void table_flush(struct simple_table *tab)
 {
 	tab->top = -1;
 }
+
+void symtab_push_block(struct symtab *tab)
+{
+	symtab_add_symbol(tab, "block", TYPE_BLOCK);
+}
+
+void symtab_pop_block(struct symtab *tab)
+{
+	struct symbol *sym = tab->stack[tab->top];
+
+	while(sym != NULL && sym->type != TYPE_BLOCK)
+	{
+		tab->top--;
+		free(sym);
+		sym = tab->stack[tab->top];
+	}
+
+	tab->top--;
+	free(sym);
+
+}
+

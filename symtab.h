@@ -8,7 +8,8 @@ enum var_type {
 	TYPE_UNKNOWN,
 	TYPE_INT,
 	TYPE_CONST_INT,
-	TYPE_TEMP_VAR
+	TYPE_TEMP_VAR,
+	TYPE_BLOCK
 };
 
 struct symbol {
@@ -31,6 +32,7 @@ int symtab_add_symbol_notype(struct symtab *tab, char *name);
 int symtab_add_symbol_temp(struct symtab *tab);
 int symtab_pop(struct symtab *tab);
 int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type);
+void symtab_push_block(struct symtab *tab);
 void symtab_printf(struct symtab *tab);
 char * symtab_text_type(enum var_type type);
 
