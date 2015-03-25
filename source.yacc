@@ -200,6 +200,29 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 instr_emit_jmf(tmp,$$);
 
             }
+            | ExprArith ComparaisonOperator tEQUAL ExprArith
+            {
+                int tmp;
+                int label_equal, label_equal_end;
+
+                tmp = symtab_add_symbol_temp(symbol_table);
+                ($2)(tmp, $1, $4); // emit comp of ComparaisonOperator
+
+                $$ = label_get_next_tmp_label();
+                label_equal_end = label_get_next_tmp_label();
+                label_equal = label_get_next_tmp_label();
+                instr_emit_jmf(tmp, label_equal); // si on se plante, on test le equal
+                instr_emit_jmp(label_equal_end); // sinon on va dans le corps
+
+                instr_emit_label(label_equal); // debut du equal
+                instr_emit_equ(tmp, $1, $4); // emit comp of = !
+                instr_emit_jmf(tmp, $$); // si on se plante, on va à la fin
+                instr_emit_label(label_equal_end);
+
+                symtab_pop(symbol_table); // delete all temp vars
+                symtab_pop(symbol_table);
+                symtab_pop(symbol_table);
+            }
             | ExprArith tDIFFERENT ExprArith
             {
                 int tmp_const = 0;
