@@ -23,7 +23,6 @@ NUMBER ([0-9]+\.)?[0-9]+([Ee][+-]?[0-9]+)?
 
 {WHITESPACE}    {};
 {ENDLINE} 	{line++;};
-main 		{return tMAIN;};
 \{ 		{return tBRAC_OPEN;};
 \} 		{return tBRAC_CLOSE;};
 const 		{return tCONST;};

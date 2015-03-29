@@ -27,7 +27,7 @@ int yyerror (char *s);
         void (* arith_operator) (int,int,int);
 }
 
-%token tINT tMAIN tCONST tPRINTF tCOMA tSEMICOLON
+%token tINT tCONST tPRINTF tCOMA tSEMICOLON
 %token tPLUS tMINUS tMULT tDIV tEQUAL
 %token tBRAC_OPEN tBRAC_CLOSE
 %token tPARENT_OPEN tPARENT_CLOSE
@@ -56,8 +56,14 @@ int yyerror (char *s);
 
 %%
 
-Start : Main BasicBloc
+Start : Functions
       ;
+
+Functions : /* empty */
+          | Functions Function
+          ;
+
+Function : Type tID tPARENT_OPEN tPARENT_CLOSE BasicBloc
 
 BeginBasicBloc : /* empty */
                {
@@ -69,9 +75,6 @@ BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
                 // get out of block, pop all !
                 symtab_pop_block(symbol_table);
             }
-
-Main : tINT tMAIN tPARENT_OPEN tPARENT_CLOSE
-     ;
 
 Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
          {
