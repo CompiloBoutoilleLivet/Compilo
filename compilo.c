@@ -26,6 +26,7 @@ void print_usage(char *s)
     printf("\t -f <filename>\t filename to parse\n");
     printf("\t\t\t if -f is not specified, stdin is parsed\n");
     printf("\t -S <filename>\t filename to write assembly\n");
+    printf("\t -r \t\t enable resolve jumps instead of using labels\n");
     printf("\t -c \t\t enable color\n");
 }
 
@@ -33,13 +34,14 @@ int main(int argc, char **argv) {
     int dflag = 0;
     int sflag = 0;
     int colorflag = 0;
+    int resolveflag = 0;
     char *filename_in = NULL;
     char *filemane_out_asm = NULL;
     FILE *fin = NULL;
     FILE *fout_asm = NULL;
     int c = 0;
 
-    while((c = getopt(argc, argv, "hc::d::s::f:S:")) != -1)
+    while((c = getopt(argc, argv, "hc::d::s::f:S:r::")) != -1)
     {
         switch(c)
         {
@@ -58,6 +60,10 @@ int main(int argc, char **argv) {
 
             case 'c':
                 colorflag = 1;
+                break;
+
+            case 'r':
+                resolveflag = 1;
                 break;
 
             case 'f': // stdin
@@ -107,6 +113,12 @@ int main(int argc, char **argv) {
     instr_manager_init();
 
 	yyparse();
+
+    if(resolveflag)
+    {
+        printf("[+] Resolve jumps ...\n");
+        instr_manager_resolve_jumps();
+    }
 
     if(sflag)
     {

@@ -1,14 +1,8 @@
 int main()
 {
-	int i, j, k, r;
+	int i = 1;
 
-	i = 3;
-	j = 4;
-	k = 8;
-
-	printf(i);
-	r = (i+j) * (i+k/j);
-
-	printf(r);
+	if(i == 0)
+		printf(i);
 
 }

@@ -57,6 +57,9 @@ int yyerror (char *s);
 %%
 
 Start : Functions
+       {
+          instr_emit_stop();
+       }
       ;
 
 Functions : /* empty */
