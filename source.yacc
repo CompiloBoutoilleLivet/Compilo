@@ -72,12 +72,14 @@ BeginBasicBloc : /* empty */
                {
                     symtab_push_block(symbol_table);
                }
+               ;
 
 BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
             {
                 // get out of block, pop all !
                 symtab_pop_block(symbol_table);
             }
+            ;
 
 Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
          {
