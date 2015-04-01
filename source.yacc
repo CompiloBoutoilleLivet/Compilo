@@ -86,6 +86,8 @@ BeginFunction : Type tID
 Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE BasicBloc
          {
                 // pour revenir à la fonction appelante
+            instr_emit_leave();
+            instr_emit_ret();
          }
          ;
 
