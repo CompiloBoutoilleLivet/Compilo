@@ -31,6 +31,7 @@ void print_usage(char *s)
 }
 
 int main(int argc, char **argv) {
+    int tmp;
     int dflag = 0;
     int sflag = 0;
     int colorflag = 0;
@@ -113,6 +114,12 @@ int main(int argc, char **argv) {
     instr_manager_init();
 
 	yyparse();
+
+    if((tmp = instr_manager_check_calls()) != 0)
+    {
+        printf("[-] Call to undefined functions : %d\n", tmp);
+        exit(EXIT_FAILURE);
+    }
 
     if(resolveflag)
     {
