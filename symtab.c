@@ -53,37 +53,6 @@ int symtab_get_symbol(struct symtab *tab, char *name)
 }
 
 /*
-Add symbol `name` on `tab` only if it doesn't exists yet
-The symbol had no specific type (TYPE_UNKNOWN)
-Returns - FALSE if the symbol is not added for any reason
-        - the offset on the symtab if there is no problem
-
-*/
-int symtab_add_if_not_exists(struct symtab *tab, char *name)
-{
-	int ret = FALSE;
-
-	if(symtab_symbol_not_exists(tab, name) == TRUE)
-	{
-		ret = symtab_add_symbol_notype(tab, name);
-	}
-
-	return ret;
-}
-
-int symtab_add_if_not_exists_in_block(struct symtab *tab, char *name)
-{
-	int ret = FALSE;
-
-	if(symtab_symbol_exists_in_block(tab, name) == FALSE)
-	{
-		ret = symtab_add_symbol_notype(tab, name);
-	}
-
-	return ret;
-}
-
-/*
 Returns - TRUE if the symbol not exists in tab
 		- FALSE if the symbol exists in tab
 */
@@ -132,6 +101,37 @@ int symtab_symbol_exists_in_block(struct symtab *tab, char *name)
 			ret = TRUE;
 			break;
 		}
+	}
+
+	return ret;
+}
+
+/*
+Add symbol `name` on `tab` only if it doesn't exists yet
+The symbol had no specific type (TYPE_UNKNOWN)
+Returns - FALSE if the symbol is not added for any reason
+        - the offset on the symtab if there is no problem
+
+*/
+int symtab_add_symbol_if_not_exists(struct symtab *tab, char *name, enum var_type type)
+{
+	int ret = FALSE;
+
+	if(symtab_symbol_not_exists(tab, name) == TRUE)
+	{
+		ret = symtab_add_symbol(tab, name, type);
+	}
+
+	return ret;
+}
+
+int symtab_add_if_not_exists_in_block(struct symtab *tab, char *name)
+{
+	int ret = FALSE;
+
+	if(symtab_symbol_exists_in_block(tab, name) == FALSE)
+	{
+		ret = symtab_add_symbol_notype(tab, name);
 	}
 
 	return ret;

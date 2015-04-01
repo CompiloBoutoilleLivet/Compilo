@@ -67,13 +67,22 @@ BeginStart : /* empty */
            }
            ;
 
-Start : BeginStart Functions
+Start : BeginStart Prototypes 
        {
        }
       ;
 
+Prototypes : Functions
+           | Prototype Prototypes 
+           ;
+
+Prototype : Type tID tPARENT_OPEN tPARENT_CLOSE tSEMICOLON 
+          {
+            symtab_add_symbol(symbol_table, $2, TYPE_FUNCTION);
+          }
+
 Functions : /* empty */
-          | Functions Function
+          | Function Functions 
           ;
 
 BeginFunction : Type tID
