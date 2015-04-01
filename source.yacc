@@ -56,9 +56,16 @@ int yyerror (char *s);
 
 %%
 
-Start : Functions
+BeginStart : /* empty */
+           {
+                int s = symtab_add_symbol(symbol_table, "main", TYPE_FUNCTION);
+                instr_emit_call(label_table_hash_string("main"));
+                instr_emit_stop();
+           }
+           ;
+
+Start : BeginStart Functions
        {
-          instr_emit_stop();
        }
       ;
 
@@ -66,7 +73,18 @@ Functions : /* empty */
           | Functions Function
           ;
 
-Function : Type tID tPARENT_OPEN tPARENT_CLOSE BasicBloc
+BeginFunction : Type tID
+              {
+                int label = label_add($2);
+                instr_emit_label(label);
+              }
+              ;
+
+Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE BasicBloc
+         {
+                // pour revenir à la fonction appelante
+         }
+         ;
 
 BeginBasicBloc : /* empty */
                {
