@@ -59,6 +59,9 @@ int yyerror (char *s);
 BeginStart : /* empty */
            {
                 symtab_add_symbol(symbol_table, "main", TYPE_FUNCTION);
+
+                instr_emit_afc_reg(EBP_REG, 0);
+                instr_emit_afc_reg(ESP_REG, 0);
                 instr_emit_call(label_table_hash_string("main"));
                 instr_emit_stop();
            }
