@@ -80,6 +80,7 @@ BeginFunction : Type tID
               {
                 int label = label_add($2);
                 instr_emit_label(label);
+                symtab_add_symbol(symbol_table, $2, TYPE_FUNCTION);
               }
               ;
 
@@ -110,6 +111,17 @@ Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
             instr_emit_pri($3);
          }
        ;
+
+CallFunction : tID tPARENT_OPEN tPARENT_CLOSE
+              {
+                  if(symtab_symbol_exists(symbol_table, $1) == FALSE){
+                    yyerror("unknow function");
+                  }
+                  else{
+                    instr_emit_call(label_table_hash_string($1));
+                  }
+              }
+              ;  
 
 Declarations : /* empty */
 	     | Declarations Type Variables tSEMICOLON
@@ -310,6 +322,7 @@ Operations : /* empty */
 
 Operation : AffectationOp tSEMICOLON
           | Printf tSEMICOLON
+          | CallFunction tSEMICOLON
           | IfElse
           | WhileLoop
           ;
