@@ -67,39 +67,31 @@ BeginStart : /* empty */
            }
            ;
 
-Start : BeginStart Prototypes 
-       {
-       }
-      ;
-
-Prototypes : Functions
-           | Prototype Prototypes 
-           ;
-
-Prototype : Type tID tPARENT_OPEN tPARENT_CLOSE tSEMICOLON 
-          {
-            symtab_add_symbol(symbol_table, $2, TYPE_FUNCTION);
-          }
+Start : BeginStart Functions;
 
 Functions : /* empty */
-          | Function Functions 
+          | Functions Function
           ;
 
-BeginFunction : Type tID
-              {
-                int label = label_add($2);
-                instr_emit_label(label);
-                symtab_add_symbol(symbol_table, $2, TYPE_FUNCTION);
-              }
-              ;
-
-Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE BasicBloc
+Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE BeginFunctionBloc BasicBloc
          {
-                // pour revenir à la fonction appelante
+            // pour revenir à la fonction appelante
             instr_emit_leave();
             instr_emit_ret();
          }
+         | BeginFunction tPARENT_OPEN tPARENT_CLOSE tSEMICOLON
          ;
+
+BeginFunction : Type tID
+              {
+                  symtab_add_symbol(symbol_table, $2, TYPE_FUNCTION);
+              }
+
+BeginFunctionBloc : /* empty */
+                  {
+                        int label = label_add(symbol_table->stack[symbol_table->top]->name); // Get the last symbol added, corresponding to the current function
+                        instr_emit_label(label);
+                  }
 
 BeginBasicBloc : /* empty */
                {
@@ -130,7 +122,7 @@ CallFunction : tID tPARENT_OPEN tPARENT_CLOSE
                     instr_emit_call(label_table_hash_string($1));
                   }
               }
-              ;  
+              ;
 
 Declarations : /* empty */
 	     | Declarations Type Variables tSEMICOLON
@@ -198,7 +190,7 @@ AffectationOp : tID Affectation /* operation */
                 	{
                 	        yyerror("variable not exists");
                 	}
-                    
+
                     struct symbol *s = symbol_table->stack[dest];
                     int v = symtab_pop(symbol_table);
                     if(s->type == TYPE_CONST_INT)
