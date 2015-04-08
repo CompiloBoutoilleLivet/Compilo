@@ -91,6 +91,8 @@ BeginFunctionBloc : /* empty */
                   {
                         int label = label_add(symbol_table->stack[symbol_table->top]->name); // Get the last symbol added, corresponding to the current function
                         instr_emit_label(label);
+                        instr_emit_push_reg(EBP_REG);
+                        instr_emit_afc_reg_reg(EBP_REG, ESP_REG);
                   }
 
 BeginBasicBloc : /* empty */
