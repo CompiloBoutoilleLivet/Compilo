@@ -9,8 +9,7 @@ enum var_type {
 	TYPE_INT,
 	TYPE_CONST_INT,
 	TYPE_TEMP_VAR,
-	TYPE_BLOCK,
-	TYPE_FUNCTION
+	TYPE_BLOCK
 };
 
 struct symbol {
