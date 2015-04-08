@@ -26,13 +26,13 @@ struct symtab {
 
 struct symtab *symtab_create(unsigned int size);
 int symtab_get_symbol(struct symtab *tab, char *name);
-int symtab_add_if_not_exists(struct symtab *tab, char *name);
 int symtab_symbol_not_exists(struct symtab *tab, char *name);
 int symtab_symbol_exists(struct symtab *tab, char *name);
 int symtab_add_symbol_notype(struct symtab *tab, char *name);
 int symtab_add_symbol_temp(struct symtab *tab);
-int symtab_pop(struct symtab *tab);
+int symtab_add_symbol_if_not_exists(struct symtab *tab, char *name, enum var_type type);
 int symtab_add_symbol(struct symtab *tab, char *name, enum var_type type);
+int symtab_pop(struct symtab *tab);
 void symtab_push_block(struct symtab *tab);
 void symtab_pop_block(struct symtab *tab);
 void symtab_printf(struct symtab *tab);
