@@ -217,8 +217,6 @@ char * symtab_text_type(enum var_type type){
 					return " TYPE_TEMP_VAR  ";
 				case TYPE_BLOCK:
 					return " TYPE_BLOCK     ";
-				case TYPE_FUNCTION:
-					return " TYPE_FUNCTION  ";
 		}
 }
 

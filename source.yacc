@@ -250,6 +250,12 @@ Condition : ExprArith ComparaisonOperator ExprArith
 
                 tmp = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 symtab_pop(symbol_function->current_function->symbol_table);
+
+                if(symfun_function_is_max_symbol(symbol_function->current_function, tmp) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
+
                 ($2)(tmp, $1, $3);
 
                 $$ = label_get_next_tmp_label();
@@ -262,6 +268,10 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 int label_equal, label_equal_end;
 
                 tmp = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, tmp) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 ($2)(tmp, $1, $4); // emit comp of ComparaisonOperator
 
                 $$ = label_get_next_tmp_label();
@@ -288,9 +298,17 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 symtab_pop(symbol_function->current_function->symbol_table);
 
                 tmp_res = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, tmp_res) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 instr_emit_equ(tmp_res, $1, $3);
 
                 tmp_const = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, tmp_const) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 instr_emit_afc(tmp_const, 1);
 
                 instr_emit_sou(tmp_res, tmp_res, tmp_const);
@@ -359,17 +377,36 @@ ExprArith : tID
                           yyerror("variable not exists");
                   } else {
                         $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                        
+                        if(symfun_function_is_max_symbol(symbol_function->current_function, s) == 0)
+                        {
+                          instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                        }
+
+                        if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
+                        {
+                          instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                        }
+
                         instr_emit_cop($$, s);
                   }
             }
           | tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 instr_emit_afc($$, $1);
             }
           | tMINUS tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 instr_emit_afc($$, $2*-1);
             }
           | ExprArith OperatorArithPlusMinus ExprArith %prec tMINUS
@@ -377,6 +414,10 @@ ExprArith : tID
                 symtab_pop(symbol_function->current_function->symbol_table);
                 symtab_pop(symbol_function->current_function->symbol_table);
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 ($2)($$, $1, $3);
             }
            | ExprArith OperatorArithMultDiv ExprArith %prec tDIV
@@ -384,6 +425,10 @@ ExprArith : tID
                 symtab_pop(symbol_function->current_function->symbol_table);
                 symtab_pop(symbol_function->current_function->symbol_table);
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
+                {
+                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                }
                 ($2)($$, $1, $3);
             }
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
