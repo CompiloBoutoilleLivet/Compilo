@@ -18,7 +18,7 @@ struct symfun *symfun_create(unsigned int size)
 	}
 
 	ret->size = size;
-  ret->top = 0;
+  ret->top = -1;
   ret->current_function = NULL;
 	ret->stack = malloc(sizeof(struct symbol_function *) * size);
 	for(i=0; i<size; i++)
@@ -41,9 +41,9 @@ int symfun_add_function(struct symfun * table, char * name)
     ret = malloc(sizeof(struct symbol_function));
     ret->name = name;
     ret->symbol_table = symtab_create(64);
+    table->top++;
     pos = table->top;
     table->stack[pos] = ret;
-    table->top++;
   }
   return pos;
 }
