@@ -14,7 +14,7 @@ struct symtab *symtab_create(unsigned int size)
 	unsigned int i;
 	struct symtab *ret = NULL;
 
-	ret = malloc(sizeof(struct symtab*));
+	ret = malloc(sizeof(struct symtab));
 	if(ret == NULL)
 	{
 		return NULL;

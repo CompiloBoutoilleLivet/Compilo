@@ -11,7 +11,7 @@ struct symfun *symfun_create(unsigned int size)
 	unsigned int i;
 	struct symfun *ret = NULL;
 
-	ret = malloc(sizeof(struct symfun*));
+	ret = malloc(sizeof(struct symfun));
 	if(ret == NULL)
 	{
 		return NULL;
