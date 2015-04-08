@@ -115,7 +115,7 @@ Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
 
 CallFunction : tID tPARENT_OPEN tPARENT_CLOSE
               {
-                  if(symtab_symbol_exists(symbol_function->current_function->symbol_table, $1) == FALSE){
+                  if(symfun_get_function(symbol_function,$1) == -1){
                     yyerror("unknow function");
                   }
                   else{
