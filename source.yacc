@@ -159,6 +159,7 @@ Variable : tID
                 {
                         yyerror("variable already exists");
                 } else {
+                    instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
                     $$ = s;
                 }
            }
@@ -176,6 +177,7 @@ AffectationDec : tID Affectation /* declaration */
                         {
                                 yyerror("variable already exists");
                         } else {
+                                instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
                                 instr_emit_cop(new, v);
                                 $$ = new;
                         }
