@@ -3,7 +3,6 @@
 #include <string.h>
 #include "symtab.h"
 
-struct symtab *symbol_table = NULL;
 struct simple_table *tmp_table = NULL;
 
 /*

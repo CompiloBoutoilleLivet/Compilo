@@ -1,5 +1,6 @@
 #include "symfun.h"
 
+struct symfun *symbol_function = NULL;
 
 /*
   Create a symbol function table of size `size`
@@ -10,7 +11,7 @@ struct symfun *symfun_create(unsigned int size)
 	unsigned int i;
 	struct symfun *ret = NULL;
 
-	ret = malloc(sizeof(struct symtab*));
+	ret = malloc(sizeof(struct symfun*));
 	if(ret == NULL)
 	{
 		return NULL;
@@ -18,6 +19,7 @@ struct symfun *symfun_create(unsigned int size)
 
 	ret->size = size;
   ret->top = 0;
+  ret->current_function = NULL;
 	ret->stack = malloc(sizeof(struct symbol_function *) * size);
 	for(i=0; i<size; i++)
 	{
@@ -35,10 +37,10 @@ int symfun_add_function(struct symfun * table, char * name)
   struct symbol_function * ret = NULL;
   int pos = -1;
 
-  if(pos = symfun_get_function(table, name) == -1){
+  if((pos = symfun_get_function(table, name)) == -1){
     ret = malloc(sizeof(struct symbol_function));
     ret->name = name;
-
+    ret->symbol_table = symtab_create(64);
     pos = table->top;
     table->stack[pos] = ret;
     table->top++;
@@ -46,7 +48,7 @@ int symfun_add_function(struct symfun * table, char * name)
   return pos;
 }
 
-int symfun_get_function(struct symbfun * table, char * name)
+int symfun_get_function(struct symfun * table, char * name)
 {
   int i;
 
@@ -59,4 +61,20 @@ int symfun_get_function(struct symbfun * table, char * name)
     }
   }
   return -1;
+}
+
+void symfun_printf(struct symfun *tab){
+	int i;
+	struct symbol_function * s;
+
+	printf("----------- Symbole Function (%d) -----------\n",tab->top+1);
+
+	if(tab->top != -1)
+	{
+		for(i=0;i<=tab->top;i++){
+			s = tab->stack[i];
+    	printf(" * Name : %s\n",s->name);
+      symtab_printf(s->symbol_table);
+		}
+	}
 }

@@ -3,11 +3,12 @@
 #include <unistd.h>
 #include "lex.yy.h"
 #include "symtab.h"
+#include "symfun.h"
 #include "instructionmanager/instructions.h"
 #include "instructionmanager/label.h"
 
 extern int line;
-extern struct symtab *symbol_table;
+extern struct symfun *symbol_function;
 extern struct simple_table *tmp_table;
 extern struct instr_manager *instr_manager;
 int yyerror (char *s);
@@ -58,8 +59,7 @@ int yyerror (char *s);
 
 BeginStart : /* empty */
            {
-                symtab_add_symbol(symbol_table, "main", TYPE_FUNCTION);
-
+                symfun_add_function(symbol_function, "main");
                 instr_emit_afc_reg(EBP_REG, 0);
                 instr_emit_afc_reg(ESP_REG, 0);
                 instr_emit_call(label_table_hash_string("main"));
@@ -74,7 +74,8 @@ Functions : /* empty */
           ;
 
 Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
-              int label = label_add(symbol_table->stack[$1]->name); // Get the last symbol added, corresponding to the current function
+              symbol_function->current_function = symbol_function->stack[$1];
+              int label = label_add(symbol_function->current_function->name); // Get the last symbol added, corresponding to the current function
               instr_emit_label(label);
               instr_emit_push_reg(EBP_REG);
               instr_emit_cop_reg(EBP_REG, ESP_REG);
@@ -89,33 +90,32 @@ Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
 
 BeginFunction : Type tID
               {
-                  symtab_add_symbol_if_not_exists(symbol_table, $2, TYPE_FUNCTION);
-                  $$ = symtab_get_symbol(symbol_table,$2);
+                  $$ = symfun_add_function(symbol_function,$2);
               }
 
 BeginBasicBloc : /* empty */
                {
-                    symtab_push_block(symbol_table);
+                    symtab_push_block(symbol_function->current_function->symbol_table);
                }
                ;
 
 BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
             {
                 // get out of block, pop all !
-                symtab_pop_block(symbol_table);
+                symtab_pop_block(symbol_function->current_function->symbol_table);
             }
             ;
 
 Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
          {
-            symtab_pop(symbol_table);
+            symtab_pop(symbol_function->current_function->symbol_table);
             instr_emit_pri($3);
          }
        ;
 
 CallFunction : tID tPARENT_OPEN tPARENT_CLOSE
               {
-                  if(symtab_symbol_exists(symbol_table, $1) == FALSE){
+                  if(symtab_symbol_exists(symbol_function->current_function->symbol_table, $1) == FALSE){
                     yyerror("unknow function");
                   }
                   else{
@@ -134,7 +134,7 @@ Declarations : /* empty */
                     for(i = 0; i<=tmp_table->top; i++)
                     {
                         off = table_get(tmp_table, i);
-                        tmp = symbol_table->stack[off];
+                        tmp = symbol_function->current_function->symbol_table->stack[off];
                         tmp->type = $2;
                     }
                     table_flush(tmp_table);
@@ -155,7 +155,7 @@ Variables : Variable
 Variable : tID
            {
                 int s = -1;
-                if((s = symtab_add_if_not_exists_in_block(symbol_table, $1)) == FALSE)
+                if((s = symtab_add_if_not_exists_in_block(symbol_function->current_function->symbol_table, $1)) == FALSE)
                 {
                         yyerror("variable already exists");
                 } else {
@@ -171,8 +171,8 @@ Variable : tID
 AffectationDec : tID Affectation /* declaration */
 		 {
                         int new = -1;
-                        int v = symtab_pop(symbol_table);
-                        if((new = symtab_add_if_not_exists_in_block(symbol_table, $1)) == FALSE)
+                        int v = symtab_pop(symbol_function->current_function->symbol_table);
+                        if((new = symtab_add_if_not_exists_in_block(symbol_function->current_function->symbol_table, $1)) == FALSE)
                         {
                                 yyerror("variable already exists");
                         } else {
@@ -184,15 +184,15 @@ AffectationDec : tID Affectation /* declaration */
 
 AffectationOp : tID Affectation /* operation */
 		{
-                  int dest = symtab_get_symbol(symbol_table, $1);
+                  int dest = symtab_get_symbol(symbol_function->current_function->symbol_table, $1);
 
                 	if(dest == FALSE)
                 	{
                 	        yyerror("variable not exists");
                 	}
 
-                    struct symbol *s = symbol_table->stack[dest];
-                    int v = symtab_pop(symbol_table);
+                    struct symbol *s = symbol_function->current_function->symbol_table->stack[dest];
+                    int v = symtab_pop(symbol_function->current_function->symbol_table);
                     if(s->type == TYPE_CONST_INT)
                     {
                         yyerror("variable is assigned but it is a declared as a const");
@@ -245,11 +245,11 @@ Condition : ExprArith ComparaisonOperator ExprArith
             {
                 int tmp;
 
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
 
-                tmp = symtab_add_symbol_temp(symbol_table);
-                symtab_pop(symbol_table);
+                tmp = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
                 ($2)(tmp, $1, $3);
 
                 $$ = label_get_next_tmp_label();
@@ -261,7 +261,7 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 int tmp;
                 int label_equal, label_equal_end;
 
-                tmp = symtab_add_symbol_temp(symbol_table);
+                tmp = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 ($2)(tmp, $1, $4); // emit comp of ComparaisonOperator
 
                 $$ = label_get_next_tmp_label();
@@ -275,27 +275,27 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 instr_emit_jmf(tmp, $$); // si on se plante, on va à la fin
                 instr_emit_label(label_equal_end);
 
-                symtab_pop(symbol_table); // delete all temp vars
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table); // delete all temp vars
+                symtab_pop(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
             }
             | ExprArith tDIFFERENT ExprArith
             {
                 int tmp_const = 0;
                 int tmp_res = 0;
 
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
 
-                tmp_res = symtab_add_symbol_temp(symbol_table);
+                tmp_res = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 instr_emit_equ(tmp_res, $1, $3);
 
-                tmp_const = symtab_add_symbol_temp(symbol_table);
+                tmp_const = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 instr_emit_afc(tmp_const, 1);
 
                 instr_emit_sou(tmp_res, tmp_res, tmp_const);
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
 
                 $$ = label_get_next_tmp_label();
                 instr_emit_jmf(tmp_res, $$);
@@ -353,37 +353,37 @@ OperatorArithMultDiv : tMULT
 
 ExprArith : tID
             {
-                  int s = symtab_get_symbol(symbol_table, $1);
+                  int s = symtab_get_symbol(symbol_function->current_function->symbol_table, $1);
                   if(s == FALSE)
                   {
                           yyerror("variable not exists");
                   } else {
-                        $$ = symtab_add_symbol_temp(symbol_table);
+                        $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                         instr_emit_cop($$, s);
                   }
             }
           | tNUMBER
             {
-                $$ = symtab_add_symbol_temp(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 instr_emit_afc($$, $1);
             }
           | tMINUS tNUMBER
             {
-                $$ = symtab_add_symbol_temp(symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 instr_emit_afc($$, $2*-1);
             }
           | ExprArith OperatorArithPlusMinus ExprArith %prec tMINUS
             {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 ($2)($$, $1, $3);
             }
            | ExprArith OperatorArithMultDiv ExprArith %prec tDIV
             {
-                symtab_pop(symbol_table);
-                symtab_pop(symbol_table);
-                $$ = symtab_add_symbol_temp(symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                symtab_pop(symbol_function->current_function->symbol_table);
+                $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 ($2)($$, $1, $3);
             }
           | tPARENT_OPEN ExprArith tPARENT_CLOSE

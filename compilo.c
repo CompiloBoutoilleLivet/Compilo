@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "lex.yy.h"
-#include "symtab.h"
+#include "symfun.h"
 #include "instructionmanager/instructions.h"
 #include "instructionmanager/label.h"
 
 extern int line;
 extern int yydebug;
-extern struct symtab *symbol_table;
+extern struct symfun *symbol_function;
 extern struct simple_table *tmp_table;
 extern struct instr_manager *instr_manager;
 void yyparse();
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    symbol_table = symtab_create(256);
+    symbol_function = symfun_create(256);
     tmp_table = table_create(256);
     instr_manager_init();
 
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
     if(sflag)
     {
         printf("[+] Number of line(s) = %d\n", line);
-        symtab_printf(symbol_table);
+        symfun_printf(symbol_function);
     }
 
     printf("[+] %d instructions generated\n", instr_manager->count);

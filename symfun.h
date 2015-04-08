@@ -14,11 +14,13 @@ struct symbol_function {
 struct symfun {
 	unsigned int size; // size of stack
   unsigned int top;
+  struct symbol_function * current_function;
 	struct symbol_function **stack;
 };
 
-struct symfun *symtab_create(unsigned int size);
+struct symfun *symfun_create(unsigned int size);
 int symfun_add_function(struct symfun * table, char * name);
-int symfun_get_function(struct symbfun * table, char * name);
+int symfun_get_function(struct symfun * table, char * name);
+void symfun_printf(struct symfun *tab);
 
 #endif /* SYMFUN_H */
