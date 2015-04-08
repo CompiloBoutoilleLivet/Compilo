@@ -217,7 +217,9 @@ char * symtab_text_type(enum var_type type){
 				case TYPE_TEMP_VAR:
 					return " TYPE_TEMP_VAR  ";
 				case TYPE_BLOCK:
-					return " TYPE_BLOCK ";
+					return " TYPE_BLOCK     ";
+				case TYPE_FUNCTION:
+					return " TYPE_FUNCTION  ";
 		}
 }
 
@@ -287,4 +289,3 @@ void symtab_pop_block(struct symtab *tab)
 	free(sym);
 
 }
-

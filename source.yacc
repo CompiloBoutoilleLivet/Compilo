@@ -53,7 +53,7 @@ int yyerror (char *s);
 %type <comp_operator> ComparaisonOperator
 %type <arith_operator> OperatorArithPlusMinus
 %type <arith_operator> OperatorArithMultDiv
-
+%type <symtab_off> BeginFunction
 %%
 
 BeginStart : /* empty */
@@ -73,7 +73,10 @@ Functions : /* empty */
           | Functions Function
           ;
 
-Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE BeginFunctionBloc BasicBloc
+Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
+              int label = label_add(symbol_table->stack[$1]->name); // Get the last symbol added, corresponding to the current function
+              instr_emit_label(label);
+            } BasicBloc
          {
             // pour revenir à la fonction appelante
             instr_emit_leave();
@@ -84,16 +87,9 @@ Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE BeginFunctionBloc BasicBloc
 
 BeginFunction : Type tID
               {
-                  symtab_add_symbol(symbol_table, $2, TYPE_FUNCTION);
+                  symtab_add_symbol_if_not_exists(symbol_table, $2, TYPE_FUNCTION);
+                  $$ = symtab_get_symbol(symbol_table,$2);
               }
-
-BeginFunctionBloc : /* empty */
-                  {
-                        int label = label_add(symbol_table->stack[symbol_table->top]->name); // Get the last symbol added, corresponding to the current function
-                        instr_emit_label(label);
-                        instr_emit_push_reg(EBP_REG);
-                        instr_emit_afc_reg_reg(EBP_REG, ESP_REG);
-                  }
 
 BeginBasicBloc : /* empty */
                {

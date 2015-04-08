@@ -9,7 +9,7 @@ int main()
 	toto();
 }
 
-int tota();
+int boubi();
 
 int toto(){
 	int b;
