@@ -76,6 +76,8 @@ Functions : /* empty */
 Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
               int label = label_add(symbol_table->stack[$1]->name); // Get the last symbol added, corresponding to the current function
               instr_emit_label(label);
+              instr_emit_push_reg(EBP_REG);
+              instr_emit_afc_reg_reg(EBP_REG, ESP_REG);
             } BasicBloc
          {
             // pour revenir à la fonction appelante
