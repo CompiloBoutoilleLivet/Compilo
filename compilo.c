@@ -26,6 +26,7 @@ void print_usage(char *s)
     printf("\t -f <filename>\t filename to parse\n");
     printf("\t\t\t if -f is not specified, stdin is parsed\n");
     printf("\t -S <filename>\t filename to write assembly\n");
+    printf("\t -o <filename>\t filename to write bytecode");
     printf("\t -r \t\t enable resolve jumps instead of using labels\n");
     printf("\t -c \t\t enable color\n");
 }
@@ -37,11 +38,13 @@ int main(int argc, char **argv) {
     int resolveflag = 0;
     char *filename_in = NULL;
     char *filemane_out_asm = NULL;
+    char *filename_out_bytecode = NULL;
     FILE *fin = NULL;
     FILE *fout_asm = NULL;
+    FILE *fout_bytecode = NULL;
     int c = 0;
 
-    while((c = getopt(argc, argv, "hc::d::s::f:S:r::")) != -1)
+    while((c = getopt(argc, argv, "hc::d::s::f:S:r::o:")) != -1)
     {
         switch(c)
         {
@@ -72,6 +75,10 @@ int main(int argc, char **argv) {
 
             case 'S': // asm stdout
                 filemane_out_asm = optarg;
+                break;
+
+            case 'o': // bytecode stdout
+                filename_out_bytecode = optarg;
                 break;
 
             case '?':
@@ -108,6 +115,16 @@ int main(int argc, char **argv) {
         }
     }
 
+    if(filename_out_bytecode != NULL)
+    {
+        fout_bytecode = fopen(filename_out_bytecode, "w+");
+        if(fout_bytecode == NULL)
+        {
+            printf("[-] unable to create %s ... \n", filename_out_bytecode);
+            return EXIT_FAILURE;
+        }
+    }
+
     symbol_table = symtab_create(256);
     tmp_table = table_create(256);
     instr_manager_init();
@@ -133,6 +150,12 @@ int main(int argc, char **argv) {
     } else {
         printf("[+] Writing asm to %s\n", filemane_out_asm);
         instr_manager_print_textual_file(fout_asm, 0);
+    }
+
+    if(fout_bytecode != NULL)
+    {
+        printf("[+] Writing bytecode to %s\n", filename_out_bytecode);
+        instr_manager_print_bytecode_file(fout_bytecode);
     }
 
 	return EXIT_SUCCESS;
