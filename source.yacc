@@ -176,7 +176,7 @@ AffectationDec : tID Affectation /* declaration */
                         {
                                 yyerror("variable already exists");
                         } else {
-                                instr_emit_cop(new, v);
+                                instr_emit_cop_rel_reg(EBP_REG, new, EBP_REG, v);
                                 $$ = new;
                         }
                  }
@@ -197,7 +197,7 @@ AffectationOp : tID Affectation /* operation */
                     {
                         yyerror("variable is assigned but it is a declared as a const");
                     } else {
-                        instr_emit_cop(dest, v);
+                        instr_emit_cop_rel_reg(EBP_REG, dest, EBP_REG, v);
                     }
 
             	}
@@ -388,7 +388,7 @@ ExprArith : tID
                           instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
                         }
 
-                        instr_emit_cop($$, s);
+                        instr_emit_cop_rel_reg(EBP_REG, $$, EBP_REG, s);
                   }
             }
           | tNUMBER
