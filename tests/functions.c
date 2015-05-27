@@ -4,7 +4,7 @@ int toto();
 
 int main()
 {
-	int a = 1;
+	int a = -1;
 	printf(a);
 	toto();
 }

@@ -309,7 +309,7 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 {
                   instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
                 }
-                instr_emit_afc(tmp_const, 1);
+                instr_emit_afc_rel_reg(EBP_REG, tmp_const, 1);
 
                 instr_emit_sou(tmp_res, tmp_res, tmp_const);
                 symtab_pop(symbol_function->current_function->symbol_table);
@@ -398,7 +398,7 @@ ExprArith : tID
                 {
                   instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
                 }
-                instr_emit_afc($$, $1);
+                instr_emit_afc_rel_reg(EBP_REG, $$, $1);
             }
           | tMINUS tNUMBER
             {
@@ -407,7 +407,7 @@ ExprArith : tID
                 {
                   instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
                 }
-                instr_emit_afc($$, $2*-1);
+                instr_emit_afc_rel_reg(EBP_REG, $$, $2*-1);
             }
           | ExprArith OperatorArithPlusMinus ExprArith %prec tMINUS
             {
