@@ -109,7 +109,7 @@ BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
 Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
          {
             symtab_pop(symbol_function->current_function->symbol_table);
-            instr_emit_pri($3);
+            instr_emit_pri_rel_reg(EBP_REG, $3);
          }
        ;
 
