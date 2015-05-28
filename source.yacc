@@ -229,21 +229,42 @@ AffectationDec : tID Affectation /* declaration */
 
 AffectationOp : tID Affectation /* operation */
 		{
+                  struct symbol *s = NULL;
+                  int is_param = 0;
                   int dest = symtab_get_symbol(symbol_function->current_function->symbol_table, $1);
 
                 	if(dest == FALSE)
                 	{
-                	        yyerror("variable not exists");
+                    dest = symtab_get_symbol(symbol_function->current_function->symbol_table_params, $1);
+                    is_param = 1;
+                    if(dest == FALSE)
+                    {
+                      yyerror("variable not exists");
+                    }
                 	}
 
-                    struct symbol *s = symbol_function->current_function->symbol_table->stack[dest];
-                    int v = symtab_pop(symbol_function->current_function->symbol_table);
-                    if(s->type == TYPE_CONST_INT)
+                  if(is_param == 1)
+                  {
+                    s = symbol_function->current_function->symbol_table_params->stack[dest];
+                  } else {
+                    s = symbol_function->current_function->symbol_table->stack[dest];
+                  }
+                  
+                  int v = symtab_pop(symbol_function->current_function->symbol_table);
+                  if(s->type == TYPE_CONST_INT)
+                  {
+                      yyerror("variable is assigned but it is a declared as a const");
+                  } else {
+
+                    if(is_param == 1)
                     {
-                        yyerror("variable is assigned but it is a declared as a const");
-                    } else {
-                        instr_emit_cop_rel_reg(BP_REG, dest, BP_REG, v);
+                      dest += 2;
+                      dest *= -1;
                     }
+                  
+                    instr_emit_cop_rel_reg(BP_REG, dest, BP_REG, v);
+                  
+                  }
 
             	}
               ;
