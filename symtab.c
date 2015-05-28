@@ -31,6 +31,22 @@ struct symtab *symtab_create(unsigned int size)
 	return ret;
 }
 
+void symtab_flush(struct symtab *tab)
+{
+	int i;
+
+	for(i=0; i<tab->size; i++)
+	{
+		if(tab->stack[i] != NULL)
+		{
+			free(tab->stack[i]);
+			tab->stack[i] = NULL;
+		}
+	}
+
+	tab->top = -1;
+}
+
 /*
 Returns the first symbol offset in `tab` which had `name`
 */

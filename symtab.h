@@ -15,7 +15,6 @@ enum var_type {
 struct symbol {
 	char *name;
 	enum var_type type;
-	int is_param;
 };
 
 struct symtab {

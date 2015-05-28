@@ -100,19 +100,24 @@ FunctionParameter : Type tID
                   }
                   ;
 
-Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE {
+Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE
+         {
               // symtab_printf(symbol_function->current_function->symbol_table_params);
               int label = label_add(symbol_function->current_function->name); // Get the last symbol added, corresponding to the current function
               instr_emit_label(label);
               instr_emit_push_reg(BP_REG);
               instr_emit_cop_reg(BP_REG, SP_REG);
-            } BasicBloc
+         }
+           BasicBloc
          {
             // pour revenir à la fonction appelante
             instr_emit_leave();
             instr_emit_ret();
          }
          | BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE tSEMICOLON
+         {
+            symtab_flush(symbol_function->current_function->symbol_table_params);
+         }
          ;
 
 BeginBasicBloc : /* empty */
