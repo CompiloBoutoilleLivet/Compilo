@@ -24,6 +24,7 @@ struct symtab {
 };
 
 struct symtab *symtab_create(unsigned int size);
+void symtab_flush(struct symtab *tab);
 int symtab_get_symbol(struct symtab *tab, char *name);
 int symtab_symbol_not_exists(struct symtab *tab, char *name);
 int symtab_symbol_exists(struct symtab *tab, char *name);
