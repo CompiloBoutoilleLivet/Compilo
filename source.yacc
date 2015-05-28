@@ -60,8 +60,8 @@ int yyerror (char *s);
 BeginStart : /* empty */
            {
                 symfun_add_function(symbol_function, "main");
-                instr_emit_afc_reg(BP_REG, 0);
-                instr_emit_afc_reg(SP_REG, 0);
+                instr_emit_afc_reg(BP_REG, 0xFF);
+                instr_emit_afc_reg(SP_REG, 0xFF);
                 instr_emit_call(label_table_hash_string("main"));
                 instr_emit_stop();
            }
