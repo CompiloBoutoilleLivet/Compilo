@@ -25,7 +25,7 @@ int yyerror (char *s);
         int symtab_off;
         int label_id;
         void (* comp_operator) (int,int,int);
-        void (* arith_operator) (int,int,int);
+        void (* arith_operator) (int,int,int,int);
 }
 
 %token tINT tCONST tPRINTF tCOMA tSEMICOLON
@@ -418,20 +418,20 @@ BlocOp : BasicBloc
 
 OperatorArithPlusMinus : tPLUS
             {
-                $$ = instr_emit_add;
+                $$ = instr_emit_add_rel_reg;
             }
             | tMINUS
             {
-                $$ = instr_emit_sou;
+                $$ = instr_emit_sou_rel_reg;
             }
 
 OperatorArithMultDiv : tMULT
             {
-                $$ = instr_emit_mul;
+                $$ = instr_emit_mul_rel_reg;
             }
             | tDIV
             {
-                $$ = instr_emit_div;
+                $$ = instr_emit_div_rel_reg;
             }
             ;
 
@@ -499,7 +499,7 @@ ExprArith : tID
                 {
                   instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
-                ($2)($$, $1, $3);
+                ($2)(BP_REG, $$, $1, $3);
             }
            | ExprArith OperatorArithMultDiv ExprArith %prec tDIV
             {
@@ -510,7 +510,7 @@ ExprArith : tID
                 {
                   instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
-                ($2)($$, $1, $3);
+                ($2)(BP_REG, $$, $1, $3);
             }
           | tPARENT_OPEN ExprArith tPARENT_CLOSE
             {
