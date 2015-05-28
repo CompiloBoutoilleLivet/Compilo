@@ -60,8 +60,8 @@ int yyerror (char *s);
 BeginStart : /* empty */
            {
                 symfun_add_function(symbol_function, "main");
-                instr_emit_afc_reg(EBP_REG, 0);
-                instr_emit_afc_reg(ESP_REG, 0);
+                instr_emit_afc_reg(BP_REG, 0);
+                instr_emit_afc_reg(SP_REG, 0);
                 instr_emit_call(label_table_hash_string("main"));
                 instr_emit_stop();
            }
@@ -77,8 +77,8 @@ Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
               symbol_function->current_function = symbol_function->stack[$1];
               int label = label_add(symbol_function->current_function->name); // Get the last symbol added, corresponding to the current function
               instr_emit_label(label);
-              instr_emit_push_reg(EBP_REG);
-              instr_emit_cop_reg(EBP_REG, ESP_REG);
+              instr_emit_push_reg(BP_REG);
+              instr_emit_cop_reg(BP_REG, SP_REG);
             } BasicBloc
          {
             // pour revenir à la fonction appelante
@@ -109,7 +109,7 @@ BasicBloc : BeginBasicBloc tBRAC_OPEN Declarations Operations tBRAC_CLOSE
 Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
          {
             symtab_pop(symbol_function->current_function->symbol_table);
-            instr_emit_pri_rel_reg(EBP_REG, $3);
+            instr_emit_pri_rel_reg(BP_REG, $3);
          }
        ;
 
@@ -176,7 +176,7 @@ AffectationDec : tID Affectation /* declaration */
                         {
                                 yyerror("variable already exists");
                         } else {
-                                instr_emit_cop_rel_reg(EBP_REG, new, EBP_REG, v);
+                                instr_emit_cop_rel_reg(BP_REG, new, BP_REG, v);
                                 $$ = new;
                         }
                  }
@@ -197,7 +197,7 @@ AffectationOp : tID Affectation /* operation */
                     {
                         yyerror("variable is assigned but it is a declared as a const");
                     } else {
-                        instr_emit_cop_rel_reg(EBP_REG, dest, EBP_REG, v);
+                        instr_emit_cop_rel_reg(BP_REG, dest, BP_REG, v);
                     }
 
             	}
@@ -253,7 +253,7 @@ Condition : ExprArith ComparaisonOperator ExprArith
 
                 if(symfun_function_is_max_symbol(symbol_function->current_function, tmp) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
 
                 ($2)(tmp, $1, $3);
@@ -270,7 +270,7 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 tmp = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, tmp) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
                 ($2)(tmp, $1, $4); // emit comp of ComparaisonOperator
 
@@ -300,16 +300,16 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 tmp_res = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, tmp_res) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
                 instr_emit_equ(tmp_res, $1, $3);
 
                 tmp_const = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, tmp_const) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
-                instr_emit_afc_rel_reg(EBP_REG, tmp_const, 1);
+                instr_emit_afc_rel_reg(BP_REG, tmp_const, 1);
 
                 instr_emit_sou(tmp_res, tmp_res, tmp_const);
                 symtab_pop(symbol_function->current_function->symbol_table);
@@ -380,15 +380,15 @@ ExprArith : tID
                         
                         if(symfun_function_is_max_symbol(symbol_function->current_function, s) == 0)
                         {
-                          instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                          instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                         }
 
                         if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
                         {
-                          instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                          instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                         }
 
-                        instr_emit_cop_rel_reg(EBP_REG, $$, EBP_REG, s);
+                        instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s);
                   }
             }
           | tNUMBER
@@ -396,18 +396,18 @@ ExprArith : tID
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
-                instr_emit_afc_rel_reg(EBP_REG, $$, $1);
+                instr_emit_afc_rel_reg(BP_REG, $$, $1);
             }
           | tMINUS tNUMBER
             {
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
-                instr_emit_afc_rel_reg(EBP_REG, $$, $2*-1);
+                instr_emit_afc_rel_reg(BP_REG, $$, $2*-1);
             }
           | ExprArith OperatorArithPlusMinus ExprArith %prec tMINUS
             {
@@ -416,7 +416,7 @@ ExprArith : tID
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
                 ($2)($$, $1, $3);
             }
@@ -427,7 +427,7 @@ ExprArith : tID
                 $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                 if(symfun_function_is_max_symbol(symbol_function->current_function, $$) == 0)
                 {
-                  instr_emit_add_reg_val(ESP_REG, ESP_REG, 1);
+                  instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
                 ($2)($$, $1, $3);
             }
