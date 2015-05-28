@@ -9,6 +9,7 @@
 struct symbol_function
 {
 	struct symtab * symbol_table;
+	struct symtab * symbol_table_params;
 	unsigned int max_symbol;
 	char * name;
 };

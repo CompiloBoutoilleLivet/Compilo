@@ -1,17 +1,5 @@
 
-
-int toto();
-
-int main()
+int main(int a, int b)
 {
-	int a = -1;
-	printf(a);
-	toto();
-}
-
-int boubi();
-
-int toto(){
-	int b;
-	printf(b);
+	int x = a + b;
 }

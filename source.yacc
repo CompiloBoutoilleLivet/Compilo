@@ -73,8 +73,35 @@ Functions : /* empty */
           | Functions Function
           ;
 
-Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
-              symbol_function->current_function = symbol_function->stack[$1];
+BeginFunction : Type tID
+              {
+                  $$ = symfun_add_function(symbol_function, $2);
+                  symbol_function->current_function = symbol_function->stack[$$];
+              }
+              ;
+
+FunctionParameters : /* empty */
+                   | FunctionParameter tCOMA FunctionParameters
+                   | FunctionParameter
+                   ;
+
+FunctionParameter : Type tID
+                  {
+                      int new = 0;
+                      struct symbol *tmp = NULL;
+
+                      if((new = symtab_add_if_not_exists_in_block(symbol_function->current_function->symbol_table_params, $2)) == FALSE)
+                      {
+                          yyerror("parameter already exists");
+                      } else {
+                          tmp = symbol_function->current_function->symbol_table_params->stack[new];
+                          tmp->type = $1;
+                      }
+                  }
+                  ;
+
+Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE {
+              // symtab_printf(symbol_function->current_function->symbol_table_params);
               int label = label_add(symbol_function->current_function->name); // Get the last symbol added, corresponding to the current function
               instr_emit_label(label);
               instr_emit_push_reg(BP_REG);
@@ -85,13 +112,8 @@ Function : BeginFunction tPARENT_OPEN tPARENT_CLOSE {
             instr_emit_leave();
             instr_emit_ret();
          }
-         | BeginFunction tPARENT_OPEN tPARENT_CLOSE tSEMICOLON
+         | BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE tSEMICOLON
          ;
-
-BeginFunction : Type tID
-              {
-                  $$ = symfun_add_function(symbol_function,$2);
-              }
 
 BeginBasicBloc : /* empty */
                {
@@ -155,10 +177,22 @@ Variables : Variable
 Variable : tID
            {
                 int s = -1;
+
+                if(symtab_symbol_exists(symbol_function->current_function->symbol_table_params, $1) == TRUE)
+                {
+                    yyerror("variable already exists as paramter");
+                }
+
                 if((s = symtab_add_if_not_exists_in_block(symbol_function->current_function->symbol_table, $1)) == FALSE)
                 {
-                        yyerror("variable already exists");
+                    yyerror("variable already exists");
                 } else {
+
+                    if(symfun_function_is_max_symbol(symbol_function->current_function, s) == 0)
+                    {
+                         instr_emit_add_reg_val(SP_REG, SP_REG, 1);
+                    }
+
                     $$ = s;
                 }
            }
@@ -172,6 +206,12 @@ AffectationDec : tID Affectation /* declaration */
 		 {
                         int new = -1;
                         int v = symtab_pop(symbol_function->current_function->symbol_table);
+
+                        if(symtab_symbol_exists(symbol_function->current_function->symbol_table_params, $1) == TRUE)
+                        {
+                            yyerror("variable already exists as paramter");
+                        }
+
                         if((new = symtab_add_if_not_exists_in_block(symbol_function->current_function->symbol_table, $1)) == FALSE)
                         {
                                 yyerror("variable already exists");
@@ -371,14 +411,22 @@ OperatorArithMultDiv : tMULT
 
 ExprArith : tID
             {
+                  int is_param = 0;
                   int s = symtab_get_symbol(symbol_function->current_function->symbol_table, $1);
+
+                  if(s == FALSE)
+                  {
+                     is_param = 1;
+                     s = symtab_get_symbol(symbol_function->current_function->symbol_table_params, $1);
+                  }
+
                   if(s == FALSE)
                   {
                           yyerror("variable not exists");
                   } else {
                         $$ = symtab_add_symbol_temp(symbol_function->current_function->symbol_table);
                         
-                        if(symfun_function_is_max_symbol(symbol_function->current_function, s) == 0)
+                        if(is_param == 0 && symfun_function_is_max_symbol(symbol_function->current_function, s) == 0)
                         {
                           instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                         }
@@ -388,7 +436,14 @@ ExprArith : tID
                           instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                         }
 
-                        instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s);
+                        if(is_param)
+                        {
+                          s += 2; // because we start at 0 and we have eip between the args and ebp.
+                          instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s*-1);
+                        } else {
+                          instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s);
+                        }
+                        
                   }
             }
           | tNUMBER

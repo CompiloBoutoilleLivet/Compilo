@@ -50,6 +50,7 @@ int symfun_add_function(struct symfun * table, char * name)
         ret->name = name;
         ret->max_symbol = 0;
         ret->symbol_table = symtab_create(64);
+        ret->symbol_table_params = symtab_create(64);
         table->top++;
         pos = table->top;
         table->stack[pos] = ret;
@@ -77,7 +78,8 @@ int symfun_function_is_max_symbol(struct symbol_function *table, int val)
 {
     int ret = -1;
 
-    if(val > table->max_symbol)
+    if(val >
+        table->max_symbol)
     {
         table->max_symbol = val;
         ret = 0;
