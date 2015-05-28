@@ -465,11 +465,11 @@ ExprArith : tID
                         if(is_param)
                         {
                           s += 2; // because we start at 0 and we have eip between the args and ebp.
-                          instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s*-1);
-                        } else {
-                          instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s);
+                          s *= -1;
                         }
                         
+                        instr_emit_cop_rel_reg(BP_REG, $$, BP_REG, s);
+                  
                   }
             }
           | tNUMBER
