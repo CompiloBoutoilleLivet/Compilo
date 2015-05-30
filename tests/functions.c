@@ -1,10 +1,13 @@
 
+int toto(int a, int z);
+
 int main(const int a)
 {
-	int i = 0;
-	while(i < a)
-	{
-		printf(i);
-		i = i + 1;
-	}
+	toto(a, a);
+}
+
+int toto(int a, int z)
+{
+	int x = a + 10;
+	toto(x, x);
 }

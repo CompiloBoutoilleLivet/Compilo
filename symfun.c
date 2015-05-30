@@ -39,12 +39,12 @@ struct symfun *symfun_create(unsigned int size)
 /*
   Add function
 */
-int symfun_add_function(struct symfun * table, char * name)
+int symfun_add_function(char * name)
 {
     struct symbol_function *ret = NULL;
     int pos = -1;
 
-    if((pos = symfun_get_function(table, name)) == -1)
+    if((pos = symfun_get_function(name)) == -1)
     {
         ret = malloc(sizeof(struct symbol_function));
         ret->name = name;
@@ -52,9 +52,10 @@ int symfun_add_function(struct symfun * table, char * name)
         ret->symbol_table = symtab_create(64);
         ret->symbol_table_params = symtab_create(64);
         ret->prologue = NULL;
-        table->top++;
-        pos = table->top;
-        table->stack[pos] = ret;
+        ret->n_args = -1;
+        symbol_function->top++;
+        pos = symbol_function->top;
+        symbol_function->stack[pos] = ret;
     }
 
     return pos;
@@ -75,19 +76,29 @@ int symfun_current_get_max_symbol()
     return symbol_function->current_function->max_symbol;
 }
 
-int symfun_get_function(struct symfun * table, char * name)
+int symfun_get_function(char * name)
 {
     int i;
 
-    for(i=table->top; i>=0; i--)
+    for(i=symbol_function->top; i>=0; i--)
     {
-        if(table->stack[i]->name != NULL && strcmp(table->stack[i]->name, name) == 0)
+        if(symbol_function->stack[i]->name != NULL && strcmp(symbol_function->stack[i]->name, name) == 0)
         {
             return i;
         }
     }
 
     return -1;
+}
+
+struct symbol_function *symbol_get_function_struct(char *name)
+{
+    int f;
+    if((f = symfun_get_function(name)) != -1)
+    {
+        return symbol_function->stack[f];
+    }
+    return NULL;
 }
 
 void symfun_current_update_max_symbol(int val)
@@ -131,9 +142,25 @@ struct symbol * symfun_current_get_symbol_struct(int i)
     return symbol_function->current_function->symbol_table->stack[i];
 }
 
+int symfun_current_get_n_args()
+{
+    return symbol_function->current_function->n_args;
+}
+
+void symfun_current_set_n_args(int i)
+{
+    symbol_function->current_function->n_args = i;
+}
+
+int symfun_current_resolve_n_args()
+{
+    return symbol_function->current_function->symbol_table_params->top + 1;
+}
+
 void symfun_current_flush_symbols()
 {
     symtab_flush(symbol_function->current_function->symbol_table_params);
+    symtab_flush(symbol_function->current_function->symbol_table);
 }
 
 void symfun_current_push_block()

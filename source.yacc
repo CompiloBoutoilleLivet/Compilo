@@ -7,6 +7,7 @@
 #include "instructionmanager/instructions.h"
 #include "instructionmanager/label.h"
 
+int n_args = 0;
 extern int line;
 extern struct symfun *symbol_function;
 extern struct simple_table *tmp_table;
@@ -59,7 +60,7 @@ int yyerror (char *s);
 
 BeginStart : /* empty */
            {
-                symfun_add_function(symbol_function, "main");
+                symfun_add_function("main");
                 instr_emit_afc_reg(BP_REG, 0xFF);
                 instr_emit_afc_reg(SP_REG, 0xFF);
                 instr_emit_call(label_table_hash_string("main"));
@@ -75,7 +76,7 @@ Functions : /* empty */
 
 BeginFunction : Type tID
               {
-                  $$ = symfun_add_function(symbol_function, $2);
+                  $$ = symfun_add_function($2);
                   symbol_function->current_function = symbol_function->stack[$$];
               }
               ;
@@ -108,6 +109,18 @@ Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE
               instr_emit_push_reg(BP_REG);
               instr_emit_cop_reg(BP_REG, SP_REG);
               symfun_current_set_prologue(instr_manager_get_last_instr());
+
+              int n = symfun_current_get_n_args();
+              if(n == -1)
+              {
+                symfun_current_set_n_args(symfun_current_resolve_n_args());
+              } else {
+                if(n != symfun_current_resolve_n_args())
+                {
+                  yyerror("function doesn't match with prototype");
+                }
+              }
+              
          }
            BasicBloc
          {
@@ -123,6 +136,8 @@ Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE
          }
          | BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE tSEMICOLON
          {
+            // c'est un prototype. On s'interesse cependant au nombre d'arguments
+            symfun_current_set_n_args(symfun_current_resolve_n_args());
             symfun_current_flush_symbols();
          }
          ;
@@ -147,14 +162,33 @@ Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
          }
        ;
 
-CallFunction : tID tPARENT_OPEN tPARENT_CLOSE
-              {
-                  if(symfun_get_function(symbol_function,$1) == -1){
+FunctionParametersCall : /* empty */
+                   | FunctionParameterCall tCOMA FunctionParametersCall
+                   | FunctionParameterCall
+                   ;
+
+FunctionParameterCall : ExprArith
+                      {
+                        symfun_current_pop();
+                        isntr_emit_push_rel_reg(BP_REG, $1);
+                        n_args++;
+                      }
+                      ;
+
+CallFunction : tID {
+                if(symfun_get_function($1) == -1){
                     yyerror("unknow function");
-                  }
-                  else{
-                    instr_emit_call(label_table_hash_string($1));
-                  }
+                }
+              }
+              tPARENT_OPEN FunctionParametersCall tPARENT_CLOSE
+              {
+                struct symbol_function *func = symbol_get_function_struct($1);
+                if(n_args != func->n_args)
+                {
+                  yyerror("bad number of arguments in function call");
+                }
+                n_args = 0;
+                instr_emit_call(label_table_hash_string($1));
               }
               ;
 

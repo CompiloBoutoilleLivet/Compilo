@@ -10,6 +10,7 @@ struct symbol_function
 {
 	struct symtab * symbol_table;
 	struct symtab * symbol_table_params;
+	unsigned int n_args;
 	unsigned int max_symbol;
 	struct instr * prologue;
 	char * name;
@@ -24,8 +25,9 @@ struct symfun
 };
 
 struct symfun *symfun_create(unsigned int size);
-int symfun_add_function(struct symfun *table, char *name);
-int symfun_get_function(struct symfun *table, char *name);
+int symfun_add_function(char *name);
+int symfun_get_function(char *name);
+struct symbol_function *symbol_get_function_struct(char *name);
 void symfun_printf(struct symfun *tab);
 
 int symfun_current_get_max_symbol();
@@ -34,6 +36,9 @@ struct instr * symfun_current_get_prologue();
 int symfun_current_add_parameter(char *name);
 struct symbol * symfun_current_get_param_struct(int i);
 struct symbol * symfun_current_get_symbol_struct(int i);
+int symfun_current_get_n_args();
+void symfun_current_set_n_args(int i);
+int symfun_current_resolve_n_args();
 int symfun_current_get_symbol(char *name);
 int symfun_current_get_param(char *name);
 void symfun_current_flush_symbols();
