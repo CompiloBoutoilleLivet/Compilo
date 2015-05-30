@@ -1,7 +1,7 @@
 
-int get()
+int get(int v)
 {
-	if(1 == 1)
+	if(v == 1)
 	{
 		return 1;
 	}
@@ -10,5 +10,5 @@ int get()
 
 int main()
 {
-	get();
+	get(1);
 }

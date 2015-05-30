@@ -180,7 +180,7 @@ FunctionParameterCall : ExprArith
 
 Return : tRETURN ExprArith
        {
-          printf("%d\n", $2);
+          instr_emit_afc_reg_mem(RT_REG, BP_REG, $2);
           instr_emit_jmp(label_table_hash_string(symfun_current_label_end()));
        }
        ;
@@ -197,8 +197,15 @@ CallFunction : tID {
                 {
                   yyerror("bad number of arguments in function call");
                 }
-                n_args = 0;
+
                 instr_emit_call(label_table_hash_string($1));
+
+                if(n_args != 0)
+                {
+                  instr_emit_add_reg_val(SP_REG, SP_REG, n_args);
+                }
+                
+                n_args = 0;
               }
               ;
 
