@@ -527,6 +527,11 @@ ExprArith : tID
             {
                 $$ = $2;
             }
+          | CallFunction
+            {
+                $$ = symfun_current_add_symbol_temp();
+                instr_emit_afc_mem_reg(BP_REG, $$, RT_REG);
+            }
           ;
 
 Type : tINT

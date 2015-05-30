@@ -10,5 +10,5 @@ int get(int v)
 
 int main()
 {
-	get(1);
+	int x = get(1) + get(0);
 }
