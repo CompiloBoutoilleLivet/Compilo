@@ -49,5 +49,6 @@ int symfun_current_parameter_exists(char *name);
 int symfun_current_add_if_not_exists_in_block(char *name);
 void symfun_current_update_max_symbol(int val);
 int symfun_current_add_symbol_temp();
+char *symfun_current_label_end();
 
 #endif /* SYMFUN_H */

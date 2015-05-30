@@ -35,6 +35,7 @@ int yyerror (char *s);
 %token tPARENT_OPEN tPARENT_CLOSE
 %token tIF tELSE tWHILE
 %token tEQUAL_BOOLEAN tDIFFERENT tSMALLER tGREATER
+%token tRETURN
 %token <number> tNUMBER
 %token <name> tID
 
@@ -131,6 +132,8 @@ Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE
               instr_insert_sou_reg_val(prologue, SP_REG, SP_REG, symfun_current_get_max_symbol());
             }
             // pour revenir à la fonction appelante
+            int label = label_add(symfun_current_label_end());
+            instr_emit_label(label);
             instr_emit_leave();
             instr_emit_ret();
          }
@@ -174,6 +177,13 @@ FunctionParameterCall : ExprArith
                         n_args++;
                       }
                       ;
+
+Return : tRETURN ExprArith
+       {
+          printf("%d\n", $2);
+          instr_emit_jmp(label_table_hash_string(symfun_current_label_end()));
+       }
+       ;
 
 CallFunction : tID {
                 if(symfun_get_function($1) == -1){
@@ -427,6 +437,7 @@ Operations : /* empty */
 Operation : AffectationOp tSEMICOLON
           | Printf tSEMICOLON
           | CallFunction tSEMICOLON
+          | Return tSEMICOLON
           | IfElse
           | WhileLoop
           ;

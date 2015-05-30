@@ -206,3 +206,10 @@ int symfun_current_add_symbol_temp()
     symfun_current_update_max_symbol(ret);
     return ret;
 }
+
+char *symfun_current_label_end()
+{
+    char *out = malloc(64);
+    snprintf(out, 64, "%s_end", symbol_function->current_function->name);
+    return out;
+}

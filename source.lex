@@ -31,6 +31,7 @@ printf 		{return tPRINTF;};
 if              {return tIF;};
 else            {return tELSE;};
 while           {return tWHILE;};
+return			{return tRETURN;}
 {ID} 		{
                         yylval.name = strdup(yytext);
                         return tID;

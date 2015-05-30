@@ -1,13 +1,14 @@
 
-int toto(int a, int z);
-
-int main(const int a)
+int get()
 {
-	toto(a, a);
+	if(1 == 1)
+	{
+		return 1;
+	}
+	return 0;
 }
 
-int toto(int a, int z)
+int main()
 {
-	int x = a + 10;
-	toto(x, x);
+	get();
 }
