@@ -1,7 +1,10 @@
 
-int toto(int x);
-
-int main(const int a, int b)
+int main(const int a)
 {
-	b = a / 2;
+	int i = 0;
+	while(i < a)
+	{
+		printf(i);
+		i = i + 1;
+	}
 }

@@ -24,7 +24,7 @@ int yyerror (char *s);
         enum var_type type;
         int symtab_off;
         int label_id;
-        void (* comp_operator) (int,int,int);
+        void (* comp_operator) (int,int,int,int);
         void (* arith_operator) (int,int,int,int);
 }
 
@@ -295,15 +295,15 @@ IfElse : If
 
 ComparaisonOperator : tEQUAL_BOOLEAN
             {
-                $$ = instr_emit_equ;
+                $$ = instr_emit_equ_rel_reg;
             }
             | tSMALLER
             {
-                $$ = instr_emit_inf;
+                $$ = instr_emit_inf_rel_reg;
             }
             | tGREATER
             {
-                $$ = instr_emit_sup;
+                $$ = instr_emit_sup_rel_reg;
             }
             ;
 
@@ -322,10 +322,10 @@ Condition : ExprArith ComparaisonOperator ExprArith
                   instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
 
-                ($2)(tmp, $1, $3);
+                ($2)(BP_REG, tmp, $1, $3);
 
                 $$ = label_get_next_tmp_label();
-                instr_emit_jmf(tmp,$$);
+                instr_emit_jmf_rel_reg(BP_REG, tmp, $$);
 
             }
             | ExprArith ComparaisonOperator tEQUAL ExprArith
@@ -338,17 +338,17 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 {
                   instr_emit_add_reg_val(SP_REG, SP_REG, 1);
                 }
-                ($2)(tmp, $1, $4); // emit comp of ComparaisonOperator
+                ($2)(BP_REG, tmp, $1, $4); // emit comp of ComparaisonOperator
 
                 $$ = label_get_next_tmp_label();
                 label_equal_end = label_get_next_tmp_label();
                 label_equal = label_get_next_tmp_label();
-                instr_emit_jmf(tmp, label_equal); // si on se plante, on test le equal
+                instr_emit_jmf_rel_reg(BP_REG, tmp, label_equal); // si on se plante, on test le equal
                 instr_emit_jmp(label_equal_end); // sinon on va dans le corps
 
                 instr_emit_label(label_equal); // debut du equal
-                instr_emit_equ(tmp, $1, $4); // emit comp of = !
-                instr_emit_jmf(tmp, $$); // si on se plante, on va à la fin
+                instr_emit_equ_rel_reg(BP_REG, tmp, $1, $4); // emit comp of = !
+                instr_emit_jmf_rel_reg(BP_REG, tmp, $$); // si on se plante, on va à la fin
                 instr_emit_label(label_equal_end);
 
                 symtab_pop(symbol_function->current_function->symbol_table); // delete all temp vars
@@ -377,12 +377,12 @@ Condition : ExprArith ComparaisonOperator ExprArith
                 }
                 instr_emit_afc_rel_reg(BP_REG, tmp_const, 1);
 
-                instr_emit_sou(tmp_res, tmp_res, tmp_const);
+                instr_emit_sou_rel_reg(BP_REG, tmp_res, tmp_res, tmp_const);
                 symtab_pop(symbol_function->current_function->symbol_table);
                 symtab_pop(symbol_function->current_function->symbol_table);
 
                 $$ = label_get_next_tmp_label();
-                instr_emit_jmf(tmp_res, $$);
+                instr_emit_jmf_rel_reg(BP_REG, tmp_res, $$);
             }
             ;
 
