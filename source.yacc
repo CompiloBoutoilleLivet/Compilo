@@ -62,8 +62,8 @@ int yyerror (char *s);
 BeginStart : /* empty */
            {
                 symfun_add_function("main");
-                instr_emit_afc_reg(BP_REG, 0xFF);
-                instr_emit_afc_reg(SP_REG, 0xFF);
+                instr_emit_afc_reg(BP_REG, 0);
+                instr_emit_afc_reg(SP_REG, 0);
                 instr_emit_call(label_table_hash_string("main"));
                 instr_emit_stop();
            }
@@ -129,7 +129,7 @@ Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE
             if(symfun_current_get_max_symbol() > 0)
             {
               struct instr *prologue = symfun_current_get_prologue();
-              instr_insert_sou_reg_val(prologue, SP_REG, SP_REG, symfun_current_get_max_symbol());
+              instr_insert_add_reg_val(prologue, SP_REG, SP_REG, symfun_current_get_max_symbol());
             }
             // pour revenir à la fonction appelante
             int label = label_add(symfun_current_label_end());
@@ -173,7 +173,7 @@ FunctionParametersCall : /* empty */
 FunctionParameterCall : ExprArith
                       {
                         symfun_current_pop();
-                        isntr_emit_push_rel_reg(BP_REG, $1);
+                        instr_emit_push_rel_reg(BP_REG, $1);
                         n_args++;
                       }
                       ;
@@ -202,7 +202,7 @@ CallFunction : tID {
 
                 if(n_args != 0)
                 {
-                  instr_emit_add_reg_val(SP_REG, SP_REG, n_args);
+                  instr_emit_sou_reg_val(SP_REG, SP_REG, n_args);
                 }
                 
                 n_args = 0;
