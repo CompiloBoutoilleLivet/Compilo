@@ -129,7 +129,7 @@ Function : BeginFunction tPARENT_OPEN FunctionParameters tPARENT_CLOSE
             if(symfun_current_get_max_symbol() > 0)
             {
               struct instr *prologue = symfun_current_get_prologue();
-              instr_insert_add_reg_val(prologue, SP_REG, SP_REG, symfun_current_get_max_symbol());
+              instr_insert_add_reg_val(prologue, SP_REG, SP_REG, symfun_current_get_max_symbol()+1);
             }
             // pour revenir à la fonction appelante
             int label = label_add(symfun_current_label_end());
