@@ -1,14 +1,11 @@
 
-int get(int v)
+int get(int v, int c)
 {
-	if(v == 1)
-	{
-		return 1;
-	}
-	return 0;
+	printf(v);
+	printf(c);
 }
 
 int main()
 {
-	int x = get(1) + get(0);
+	get(1, 2);
 }
