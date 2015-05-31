@@ -199,12 +199,6 @@ CallFunction : tID {
                 }
 
                 instr_emit_call(label_table_hash_string($1));
-
-                if(n_args != 0)
-                {
-                  instr_emit_sou_reg_val(SP_REG, SP_REG, n_args);
-                }
-                
                 n_args = 0;
               }
               ;
@@ -310,7 +304,7 @@ AffectationOp : tID Affectation /* operation */
 
                     if(is_param == 1)
                     {
-                      dest += 2;
+                      dest += 3;
                       dest *= -1;
                     }
                   
@@ -491,7 +485,7 @@ ExprArith : tID
 
                         if(is_param)
                         {
-                          s += 2; // because we start at 0 and we have eip between the args and ebp.
+                          s += 3; // because we start at 0 and we have eip between the args and ebp.
                           s *= -1;
                         }
                         

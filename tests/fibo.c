@@ -11,6 +11,10 @@ int fibo(int n)
 
 int main()
 {
-	int i = 0;
-	printf(fibo(i));
+	int x = 0;
+	while(x < 30)
+	{
+		printf(fibo(x));
+		x = x + 1;
+	}
 }
