@@ -3,7 +3,6 @@
 #include <string.h>
 #include "symtab.h"
 
-struct symtab *symbol_table = NULL;
 struct simple_table *tmp_table = NULL;
 
 /*
@@ -15,7 +14,7 @@ struct symtab *symtab_create(unsigned int size)
 	unsigned int i;
 	struct symtab *ret = NULL;
 
-	ret = malloc(sizeof(struct symtab*));
+	ret = malloc(sizeof(struct symtab));
 	if(ret == NULL)
 	{
 		return NULL;
@@ -30,6 +29,22 @@ struct symtab *symtab_create(unsigned int size)
 	}
 
 	return ret;
+}
+
+void symtab_flush(struct symtab *tab)
+{
+	int i;
+
+	for(i=0; i<tab->size; i++)
+	{
+		if(tab->stack[i] != NULL)
+		{
+			free(tab->stack[i]);
+			tab->stack[i] = NULL;
+		}
+	}
+
+	tab->top = -1;
 }
 
 /*
@@ -47,37 +62,6 @@ int symtab_get_symbol(struct symtab *tab, char *name)
 			ret = i;
 			break;
 		}
-	}
-
-	return ret;
-}
-
-/*
-Add symbol `name` on `tab` only if it doesn't exists yet
-The symbol had no specific type (TYPE_UNKNOWN)
-Returns - FALSE if the symbol is not added for any reason
-        - the offset on the symtab if there is no problem
-
-*/
-int symtab_add_if_not_exists(struct symtab *tab, char *name)
-{
-	int ret = FALSE;
-
-	if(symtab_symbol_not_exists(tab, name) == TRUE)
-	{
-		ret = symtab_add_symbol_notype(tab, name);
-	}
-
-	return ret;
-}
-
-int symtab_add_if_not_exists_in_block(struct symtab *tab, char *name)
-{
-	int ret = FALSE;
-
-	if(symtab_symbol_exists_in_block(tab, name) == FALSE)
-	{
-		ret = symtab_add_symbol_notype(tab, name);
 	}
 
 	return ret;
@@ -132,6 +116,37 @@ int symtab_symbol_exists_in_block(struct symtab *tab, char *name)
 			ret = TRUE;
 			break;
 		}
+	}
+
+	return ret;
+}
+
+/*
+Add symbol `name` on `tab` only if it doesn't exists yet
+The symbol had no specific type (TYPE_UNKNOWN)
+Returns - FALSE if the symbol is not added for any reason
+        - the offset on the symtab if there is no problem
+
+*/
+int symtab_add_symbol_if_not_exists(struct symtab *tab, char *name, enum var_type type)
+{
+	int ret = FALSE;
+
+	if(symtab_symbol_not_exists(tab, name) == TRUE)
+	{
+		ret = symtab_add_symbol(tab, name, type);
+	}
+
+	return ret;
+}
+
+int symtab_add_if_not_exists_in_block(struct symtab *tab, char *name)
+{
+	int ret = FALSE;
+
+	if(symtab_symbol_exists_in_block(tab, name) == FALSE)
+	{
+		ret = symtab_add_symbol_notype(tab, name);
 	}
 
 	return ret;
@@ -217,7 +232,7 @@ char * symtab_text_type(enum var_type type){
 				case TYPE_TEMP_VAR:
 					return " TYPE_TEMP_VAR  ";
 				case TYPE_BLOCK:
-					return " TYPE_BLOCK ";
+					return " TYPE_BLOCK     ";
 		}
 }
 
@@ -287,4 +302,3 @@ void symtab_pop_block(struct symtab *tab)
 	free(sym);
 
 }
-
