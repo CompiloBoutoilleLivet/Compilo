@@ -166,11 +166,16 @@ Printf : tPRINTF tPARENT_OPEN ExprArith tPARENT_CLOSE
        ;
 
 FunctionParametersCall : /* empty */
-                   | FunctionParameterCall tCOMA FunctionParametersCall
                    | FunctionParameterCall
+                   | ExprArith
+                   {
+                        symfun_current_pop();
+                        instr_emit_push_rel_reg(BP_REG, $1);
+                        n_args++;
+                   }
                    ;
 
-FunctionParameterCall : ExprArith
+FunctionParameterCall : ExprArith tCOMA FunctionParametersCall
                       {
                         symfun_current_pop();
                         instr_emit_push_rel_reg(BP_REG, $1);
